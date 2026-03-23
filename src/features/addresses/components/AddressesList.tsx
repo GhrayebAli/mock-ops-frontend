@@ -4,9 +4,9 @@ import {
   Box, Typography, TextField, Button, Dialog, DialogTitle,
   DialogContent, DialogActions, Chip, MenuItem, Select,
   FormControl, InputLabel, SelectChangeEvent, InputAdornment, Divider,
-  Paper, Stack,
+  Paper, Stack, Card, CardContent,
 } from '@mui/material';
-import { Add, Search, FilterAlt, LocationOn } from '@mui/icons-material';
+import { Add, Search, LocationOn, LocationCity, Public, Apartment } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { useAddresses, useCreateAddress } from '../hooks/useAddresses';
 import type { Address } from '../../../interfaces/Address';
@@ -22,6 +22,13 @@ const LABEL_COLORS: Record<string, 'primary' | 'warning' | 'success' | 'default'
   Work: 'warning',
   Office: 'success',
 };
+
+const STAT_CARDS = [
+  { key: 'total',     label: 'TOTAL ADDRESSES', subtitle: 'Registered locations', color: '#9c27b0', icon: <LocationOn sx={{ fontSize: 28 }} /> },
+  { key: 'dubai',     label: 'DUBAI',            subtitle: 'Locations in Dubai',   color: '#1976d2', icon: <LocationCity sx={{ fontSize: 28 }} /> },
+  { key: 'abu_dhabi', label: 'ABU DHABI',        subtitle: 'Locations in Abu Dhabi', color: '#2e7d32', icon: <Public sx={{ fontSize: 28 }} /> },
+  { key: 'sharjah',  label: 'SHARJAH',           subtitle: 'Locations in Sharjah', color: '#ed6c02', icon: <Apartment sx={{ fontSize: 28 }} /> },
+];
 
 const columns: GridColDef[] = [
   { field: 'customerId', headerName: 'Customer', flex: 0.9 },
@@ -48,12 +55,8 @@ const columns: GridColDef[] = [
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
           <LocationOn sx={{ fontSize: 18, color: 'primary.main', flexShrink: 0 }} />
           <Box>
-            <Typography variant="body2" sx={{ fontWeight: 500 }}>
-              {row.building}
-            </Typography>
-            <Typography variant="caption" color="text.secondary">
-              {row.area}
-            </Typography>
+            <Typography variant="body2" sx={{ fontWeight: 500 }}>{row.building}</Typography>
+            <Typography variant="caption" color="text.secondary">{row.area}</Typography>
           </Box>
         </Box>
       );
@@ -75,13 +78,7 @@ const columns: GridColDef[] = [
 ];
 
 const emptyForm: Omit<Address, 'id'> = {
-  customerId: '',
-  label: '',
-  area: '',
-  building: '',
-  floor: '',
-  apartment: '',
-  cityId: '',
+  customerId: '', label: '', area: '', building: '', floor: '', apartment: '', cityId: '',
 };
 
 export default function AddressesList() {
@@ -100,12 +97,20 @@ export default function AddressesList() {
     return () => { if (debounceRef.current) clearTimeout(debounceRef.current); };
   }, [customerInput]);
 
-  const params = (customerFilter || cityFilter)
+  // Always fetch all for stats; filtered separately for the table
+  const { data: allAddresses } = useAddresses();
+  const filterParams = (customerFilter || cityFilter)
     ? { ...(customerFilter && { customerId: customerFilter }), ...(cityFilter && { cityId: cityFilter }) }
     : undefined;
-
-  const { data: addresses, isLoading, error } = useAddresses(params);
+  const { data: addresses, isLoading, error } = useAddresses(filterParams);
   const createAddress = useCreateAddress();
+
+  const stats = {
+    total:     allAddresses?.length ?? 0,
+    dubai:     allAddresses?.filter(a => a.cityId === 'dubai').length ?? 0,
+    abu_dhabi: allAddresses?.filter(a => a.cityId === 'abu_dhabi').length ?? 0,
+    sharjah:   allAddresses?.filter(a => a.cityId === 'sharjah').length ?? 0,
+  };
 
   const handleCreate = async () => {
     setSubmitAttempted(true);
@@ -133,115 +138,128 @@ export default function AddressesList() {
   }
 
   return (
-    <Box sx={{ p: 3 }}>
-      {/* Header */}
+    <Box sx={{ p: 3, bgcolor: '#f0f2f5', minHeight: '100vh' }}>
+
+      {/* Page Header */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 3 }}>
         <Box>
-          <Typography variant="h4" sx={{ fontWeight: 700, mb: 0.5 }}>
-            Addresses
-          </Typography>
-          {addresses && (
-            <Typography variant="body2" color="text.secondary">
-              {addresses.length} {addresses.length === 1 ? 'address' : 'addresses'}
-              {(customerFilter || cityFilter) && ` • ${addresses.length === 0 ? 'no matches' : 'matching filters'}`}
-            </Typography>
-          )}
+          <Typography variant="h4" sx={{ fontWeight: 700, mb: 0.5 }}>Addresses</Typography>
+          <Typography variant="body2" color="text.secondary">Manage registered customer locations</Typography>
         </Box>
         <Button
           variant="contained"
           startIcon={<Add />}
           onClick={() => setDialogOpen(true)}
-          sx={{ textTransform: 'none', fontWeight: 600 }}
+          sx={{ textTransform: 'none', fontWeight: 600, px: 2.5 }}
         >
           New Address
         </Button>
       </Box>
 
-      {/* Filter Bar */}
-      <Paper
-        sx={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: 2,
-          mb: 3,
-          p: 2,
-          bgcolor: 'background.default',
-          border: '1px solid',
-          borderColor: 'divider',
-        }}
-      >
-        <FilterAlt fontSize="small" sx={{ color: 'text.secondary', flexShrink: 0 }} />
-        <TextField
-          placeholder="Search by customer"
-          value={customerInput}
-          onChange={(e) => setCustomerInput(e.target.value)}
-          size="small"
-          variant="outlined"
-          sx={{
-            width: 220,
-            '& .MuiOutlinedInput-root': { fontSize: '0.875rem' },
-          }}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <Search sx={{ fontSize: 18, color: 'text.secondary' }} />
-              </InputAdornment>
-            ),
-          }}
-        />
-        <Divider orientation="vertical" flexItem />
-        <FormControl size="small" sx={{ width: 140 }}>
-          <InputLabel>City</InputLabel>
-          <Select
-            value={cityFilter}
-            label="City"
-            onChange={(e: SelectChangeEvent) => setCityFilter(e.target.value)}
-          >
-            <MenuItem value="">All cities</MenuItem>
-            <MenuItem value="dubai">Dubai</MenuItem>
-            <MenuItem value="abu_dhabi">Abu Dhabi</MenuItem>
-            <MenuItem value="sharjah">Sharjah</MenuItem>
-          </Select>
-        </FormControl>
-        {(customerInput || cityFilter) && (
-          <Button
-            size="small"
-            onClick={() => {
-              setCustomerInput('');
-              setCityFilter('');
+      {/* Stat Cards */}
+      <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 2.5, mb: 3 }}>
+        {STAT_CARDS.map(({ key, label, subtitle, color, icon }) => (
+          <Card
+            key={key}
+            elevation={0}
+            sx={{
+              borderTop: `4px solid ${color}`,
+              bgcolor: 'white',
+              borderRadius: 2,
+              cursor: key !== 'total' ? 'pointer' : 'default',
+              transition: 'box-shadow 0.15s',
+              '&:hover': key !== 'total' ? { boxShadow: 3 } : {},
             }}
-            sx={{ ml: 'auto', textTransform: 'none' }}
+            onClick={() => {
+              if (key !== 'total') setCityFilter(cityFilter === key ? '' : key);
+            }}
           >
-            Clear filters
-          </Button>
-        )}
-      </Paper>
+            <CardContent sx={{ p: 2.5 }}>
+              <Typography variant="caption" sx={{ fontWeight: 700, letterSpacing: 0.8, color: 'text.secondary' }}>
+                {label}
+              </Typography>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 0.5 }}>
+                <Typography variant="h3" sx={{ fontWeight: 700, lineHeight: 1.2 }}>
+                  {stats[key as keyof typeof stats]}
+                </Typography>
+                <Box sx={{ color, opacity: 0.8 }}>{icon}</Box>
+              </Box>
+              <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+                {subtitle}
+              </Typography>
+            </CardContent>
+          </Card>
+        ))}
+      </Box>
 
-      {/* Data Grid */}
-      <Paper sx={{ height: 600, width: '100%', overflow: 'hidden' }}>
-        <DataGrid
-          rows={addresses || []}
-          columns={columns}
-          loading={isLoading}
-          pageSizeOptions={[10, 25, 50]}
-          initialState={{
-            pagination: { paginationModel: { pageSize: 10 } },
-          }}
-          onRowClick={(params) => navigate(`/addresses/${params.row.id}`)}
-          sx={{
-            cursor: 'pointer',
-            '& .MuiDataGrid-row': {
-              '&:hover': { bgcolor: 'action.hover' },
-            },
-            '& .MuiDataGrid-cell': { borderBottomColor: 'divider' },
-          }}
-          rowHeight={56}
-        />
+      {/* Table Card */}
+      <Paper elevation={0} sx={{ borderRadius: 2, overflow: 'hidden' }}>
+        {/* Table Toolbar */}
+        <Box sx={{ px: 2.5, py: 2, display: 'flex', alignItems: 'center', gap: 2, borderBottom: '1px solid', borderColor: 'divider' }}>
+          <TextField
+            placeholder="Search by customer"
+            value={customerInput}
+            onChange={(e) => setCustomerInput(e.target.value)}
+            size="small"
+            sx={{ width: 220 }}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <Search sx={{ fontSize: 18, color: 'text.secondary' }} />
+                </InputAdornment>
+              ),
+            }}
+          />
+          <FormControl size="small" sx={{ width: 140 }}>
+            <InputLabel>City</InputLabel>
+            <Select
+              value={cityFilter}
+              label="City"
+              onChange={(e: SelectChangeEvent) => setCityFilter(e.target.value)}
+            >
+              <MenuItem value="">All cities</MenuItem>
+              <MenuItem value="dubai">Dubai</MenuItem>
+              <MenuItem value="abu_dhabi">Abu Dhabi</MenuItem>
+              <MenuItem value="sharjah">Sharjah</MenuItem>
+            </Select>
+          </FormControl>
+          {(customerInput || cityFilter) && (
+            <Button size="small" onClick={() => { setCustomerInput(''); setCityFilter(''); }} sx={{ textTransform: 'none' }}>
+              Clear
+            </Button>
+          )}
+          {addresses && (
+            <Typography variant="body2" color="text.secondary" sx={{ ml: 'auto' }}>
+              {addresses.length} {addresses.length === 1 ? 'result' : 'results'}
+            </Typography>
+          )}
+        </Box>
+
+        {/* DataGrid */}
+        <Box sx={{ height: 560 }}>
+          <DataGrid
+            rows={addresses || []}
+            columns={columns}
+            loading={isLoading}
+            pageSizeOptions={[10, 25, 50]}
+            initialState={{ pagination: { paginationModel: { pageSize: 10 } } }}
+            onRowClick={(params) => navigate(`/addresses/${params.row.id}`)}
+            sx={{
+              border: 'none',
+              cursor: 'pointer',
+              '& .MuiDataGrid-columnHeaders': { bgcolor: '#fafafa', borderBottom: '1px solid', borderColor: 'divider' },
+              '& .MuiDataGrid-columnHeaderTitle': { fontWeight: 700, fontSize: '0.78rem', textTransform: 'uppercase', letterSpacing: 0.5, color: 'text.secondary' },
+              '& .MuiDataGrid-cell': { borderBottomColor: 'divider' },
+              '& .MuiDataGrid-row:hover': { bgcolor: '#f5f7fa' },
+            }}
+            rowHeight={56}
+          />
+        </Box>
       </Paper>
 
       {/* New Address Dialog */}
       <Dialog open={dialogOpen} onClose={handleDialogClose} maxWidth="sm" fullWidth>
-        <DialogTitle sx={{ fontWeight: 600 }}>Add New Address</DialogTitle>
+        <DialogTitle sx={{ fontWeight: 700 }}>Add New Address</DialogTitle>
         <Divider />
         <DialogContent>
           <Stack spacing={2.5} sx={{ pt: 2 }}>
@@ -306,9 +324,7 @@ export default function AddressesList() {
         </DialogContent>
         <Divider />
         <DialogActions sx={{ p: 2 }}>
-          <Button onClick={handleDialogClose} sx={{ textTransform: 'none' }}>
-            Cancel
-          </Button>
+          <Button onClick={handleDialogClose} sx={{ textTransform: 'none' }}>Cancel</Button>
           <Button
             variant="contained"
             onClick={handleCreate}
