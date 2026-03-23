@@ -18,15 +18,12 @@ function MetricCard({
   subtitle?: string;
   to?: string;
 }) {
-  return (
+  const card = (
     <Card
-      {...(to ? { component: Link, to } : {})}
       sx={{
         overflow: 'hidden',
         position: 'relative',
         height: '100%',
-        textDecoration: 'none',
-        color: 'inherit',
         transition: 'transform 0.18s ease, box-shadow 0.18s ease',
         cursor: to ? 'pointer' : 'default',
         '&:hover': {
@@ -77,6 +74,15 @@ function MetricCard({
       </CardContent>
     </Card>
   );
+
+  if (to) {
+    return (
+      <Link to={to} style={{ textDecoration: 'none', display: 'block', height: '100%' }}>
+        {card}
+      </Link>
+    );
+  }
+  return card;
 }
 
 export default function Dashboard() {
