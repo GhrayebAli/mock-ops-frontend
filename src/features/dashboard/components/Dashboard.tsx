@@ -3,30 +3,32 @@ import {
   Chip, Avatar, LinearProgress, Divider,
 } from '@mui/material';
 import { People, ShoppingCart, LocationOn, CheckCircle } from '@mui/icons-material';
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useUsers } from '../../users/hooks/useUsers';
 
 const AVATAR_COLORS = ['#1565c0', '#2e7d32', '#ed6c02', '#9c27b0', '#0288d1'];
 
 function MetricCard({
-  title, value, icon, color, subtitle, onClick,
+  title, value, icon, color, subtitle, to,
 }: {
   title: string;
   value: string | number;
   icon: React.ReactNode;
   color: string;
   subtitle?: string;
-  onClick?: () => void;
+  to?: string;
 }) {
   return (
     <Card
-      onClick={onClick}
+      {...(to ? { component: Link, to } : {})}
       sx={{
         overflow: 'hidden',
         position: 'relative',
         height: '100%',
+        textDecoration: 'none',
+        color: 'inherit',
         transition: 'transform 0.18s ease, box-shadow 0.18s ease',
-        cursor: onClick ? 'pointer' : 'default',
+        cursor: to ? 'pointer' : 'default',
         '&:hover': {
           transform: 'translateY(-3px)',
           boxShadow: '0 8px 24px rgba(0,0,0,0.12)',
@@ -78,7 +80,6 @@ function MetricCard({
 }
 
 export default function Dashboard() {
-  const navigate = useNavigate();
   const { data: users } = useUsers();
 
   const totalUsers = users?.length || 0;
@@ -111,7 +112,7 @@ export default function Dashboard() {
             icon={<People fontSize="inherit" />}
             color="#1565c0"
             subtitle="Registered accounts"
-            onClick={() => navigate('/users')}
+            to="/users"
           />
         </Grid>
         <Grid size={{ xs: 12, sm: 6, md: 3 }}>
