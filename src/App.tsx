@@ -101,7 +101,7 @@ function NavBar() {
                 fontWeight: active ? 700 : 400,
                 px: 1.5,
                 borderRadius: 2,
-                bgcolor: active ? 'primary.50' : 'transparent',
+                bgcolor: active ? 'rgba(21, 101, 192, 0.08)' : 'transparent',
                 '&:hover': { bgcolor: 'action.hover' },
               }}
             >
