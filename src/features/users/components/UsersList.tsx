@@ -44,9 +44,14 @@ export default function UsersList() {
   }
 
   return (
-    <Box sx={{ p: 3 }}>
-      <Typography variant="h4" sx={{ mb: 3 }}>Users</Typography>
-      <Box sx={{ height: 600, width: '100%' }}>
+    <Box sx={{ p: 3, maxWidth: 1400, mx: 'auto' }}>
+      <Box sx={{ mb: 3 }}>
+        <Typography variant="h4">Users</Typography>
+        <Typography variant="body1" color="text.secondary" sx={{ mt: 0.5 }}>
+          Manage and view all registered users
+        </Typography>
+      </Box>
+      <Box sx={{ height: 600, width: '100%', bgcolor: 'background.paper', borderRadius: 2, border: '1px solid', borderColor: 'divider', overflow: 'hidden' }}>
         <DataGrid
           rows={users || []}
           columns={columns}
@@ -56,7 +61,7 @@ export default function UsersList() {
             pagination: { paginationModel: { pageSize: 10 } },
           }}
           onRowClick={(params) => navigate(`/users/${params.row.id}`)}
-          sx={{ cursor: 'pointer' }}
+          sx={{ cursor: 'pointer', border: 'none' }}
         />
       </Box>
     </Box>
