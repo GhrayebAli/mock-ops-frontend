@@ -3,9 +3,9 @@ import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import {
   Box, Typography, TextField, Button, Dialog, DialogTitle,
   DialogContent, DialogActions, Chip, MenuItem, Select,
-  FormControl, InputLabel, SelectChangeEvent,
+  FormControl, InputLabel, SelectChangeEvent, InputAdornment, Divider,
 } from '@mui/material';
-import { Add } from '@mui/icons-material';
+import { Add, Search, FilterAlt } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { useAddresses, useCreateAddress } from '../hooks/useAddresses';
 import type { Address } from '../../../interfaces/Address';
@@ -120,34 +120,61 @@ export default function AddressesList() {
 
   return (
     <Box sx={{ p: 3 }}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Typography variant="h4">Addresses</Typography>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+        <Box>
+          <Typography variant="h4" sx={{ lineHeight: 1 }}>Addresses</Typography>
+          {addresses && (
+            <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+              {addresses.length} {addresses.length === 1 ? 'address' : 'addresses'}
+              {(customerFilter || cityFilter) && ' matching filters'}
+            </Typography>
+          )}
+        </Box>
         <Button variant="contained" startIcon={<Add />} onClick={() => setDialogOpen(true)}>
           New Address
         </Button>
       </Box>
 
-      <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
+      <Box
+        sx={{
+          display: 'flex', alignItems: 'center', gap: 2, mb: 2,
+          p: 1.5, borderRadius: 1, bgcolor: 'grey.50', border: '1px solid', borderColor: 'divider',
+        }}
+      >
+        <FilterAlt fontSize="small" sx={{ color: 'text.secondary', flexShrink: 0 }} />
         <TextField
-          label="Filter by Customer ID"
+          placeholder="Customer ID"
           value={customerInput}
           onChange={(e) => setCustomerInput(e.target.value)}
           size="small"
-          sx={{ width: 240 }}
+          sx={{ width: 200 }}
+          InputProps={{
+            startAdornment: <InputAdornment position="start"><Search fontSize="small" /></InputAdornment>,
+          }}
         />
-        <FormControl size="small" sx={{ width: 160 }}>
+        <Divider orientation="vertical" flexItem />
+        <FormControl size="small" sx={{ width: 150 }}>
           <InputLabel>City</InputLabel>
           <Select
             value={cityFilter}
             label="City"
             onChange={(e: SelectChangeEvent) => setCityFilter(e.target.value)}
           >
-            <MenuItem value="">All</MenuItem>
+            <MenuItem value="">All cities</MenuItem>
             <MenuItem value="dubai">Dubai</MenuItem>
             <MenuItem value="abu_dhabi">Abu Dhabi</MenuItem>
             <MenuItem value="sharjah">Sharjah</MenuItem>
           </Select>
         </FormControl>
+        {(customerInput || cityFilter) && (
+          <Button
+            size="small"
+            onClick={() => { setCustomerInput(''); setCityFilter(''); }}
+            sx={{ ml: 'auto', color: 'text.secondary' }}
+          >
+            Clear
+          </Button>
+        )}
       </Box>
 
       <Box sx={{ height: 600, width: '100%' }}>
