@@ -6,7 +6,7 @@ import {
   FormControl, InputLabel, SelectChangeEvent, InputAdornment, Divider,
   Paper, Stack,
 } from '@mui/material';
-import { Add, Search, FilterAlt, MapPin } from '@mui/icons-material';
+import { Add, Search, FilterAlt, LocationOn } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { useAddresses, useCreateAddress } from '../hooks/useAddresses';
 import type { Address } from '../../../interfaces/Address';
@@ -46,7 +46,7 @@ const columns: GridColDef[] = [
       const row = params.row as Address;
       return (
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          <MapPin sx={{ fontSize: 18, color: 'primary.main', flexShrink: 0 }} />
+          <LocationOn sx={{ fontSize: 18, color: 'primary.main', flexShrink: 0 }} />
           <Box>
             <Typography variant="body2" sx={{ fontWeight: 500 }}>
               {row.building}

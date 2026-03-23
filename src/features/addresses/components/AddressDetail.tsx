@@ -1,9 +1,9 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import {
   Box, Typography, TextField, Paper, CircularProgress,
-  Button, Chip, Divider, IconButton, Tooltip, Stack, Card, CardContent,
+  Button, Chip, IconButton, Tooltip, Stack, Card, CardContent,
 } from '@mui/material';
-import { ArrowBack, ContentCopy, MapPin, Home } from '@mui/icons-material';
+import { ArrowBack, ContentCopy, LocationOn, Home } from '@mui/icons-material';
 import { useAddressDetails } from '../hooks/useAddresses';
 
 const CITY_LABELS: Record<string, string> = {
@@ -76,7 +76,7 @@ export default function AddressDetail() {
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 2 }}>
             <Box sx={{ flex: 1 }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
-                <MapPin />
+                <LocationOn />
                 <Typography variant="body2" sx={{ opacity: 0.9 }}>
                   Address Details
                 </Typography>
