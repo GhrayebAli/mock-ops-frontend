@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 export const INTERNAL_OPS_API = axios.create({
-  baseURL: 'http://localhost:1337',
+  baseURL: '/api',
   headers: {
     'Content-Type': 'application/json',
   },
