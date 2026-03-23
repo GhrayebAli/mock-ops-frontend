@@ -1,11 +1,12 @@
 import { Box, Card, CardContent, Typography, Grid } from '@mui/material';
 import { People, ShoppingCart, LocationOn, CheckCircle } from '@mui/icons-material';
+import { useNavigate } from 'react-router-dom';
 import { useUsers } from '../../users/hooks/useUsers';
 import { useAddresses } from '../../addresses/hooks/useAddresses';
 
-function MetricCard({ title, value, icon, color }: { title: string; value: string | number; icon: React.ReactNode; color: string }) {
+function MetricCard({ title, value, icon, color, onClick }: { title: string; value: string | number; icon: React.ReactNode; color: string; onClick?: () => void }) {
   return (
-    <Card sx={{ minWidth: 200 }}>
+    <Card sx={{ minWidth: 200, cursor: onClick ? 'pointer' : 'default' }} onClick={onClick}>
       <CardContent>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <Box>
@@ -20,6 +21,7 @@ function MetricCard({ title, value, icon, color }: { title: string; value: strin
 }
 
 export default function Dashboard() {
+  const navigate = useNavigate();
   const { data: users } = useUsers();
   const { data: addresses } = useAddresses();
   const activeUsers = users?.filter(u => u.isActive).length || 0;
@@ -40,7 +42,7 @@ export default function Dashboard() {
           <MetricCard title="Orders Today" value={5} icon={<ShoppingCart fontSize="inherit" />} color="#ed6c02" />
         </Grid>
         <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-          <MetricCard title="Addresses" value={totalAddresses} icon={<LocationOn fontSize="inherit" />} color="#9c27b0" />
+          <MetricCard title="Addresses" value={totalAddresses} icon={<LocationOn fontSize="inherit" />} color="#9c27b0" onClick={() => navigate('/addresses')} />
         </Grid>
       </Grid>
     </Box>
