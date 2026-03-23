@@ -4,8 +4,9 @@ import {
   Box, Typography, TextField, Button, Dialog, DialogTitle,
   DialogContent, DialogActions, Chip, MenuItem, Select,
   FormControl, InputLabel, SelectChangeEvent, InputAdornment, Divider,
+  Paper, Stack,
 } from '@mui/material';
-import { Add, Search, FilterAlt } from '@mui/icons-material';
+import { Add, Search, FilterAlt, MapPin } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { useAddresses, useCreateAddress } from '../hooks/useAddresses';
 import type { Address } from '../../../interfaces/Address';
@@ -23,31 +24,37 @@ const LABEL_COLORS: Record<string, 'primary' | 'warning' | 'success' | 'default'
 };
 
 const columns: GridColDef[] = [
-  { field: 'id', headerName: 'ID', flex: 1 },
-  { field: 'customerId', headerName: 'Customer', flex: 1 },
+  { field: 'customerId', headerName: 'Customer', flex: 0.9 },
   {
     field: 'label',
-    headerName: 'Label',
-    flex: 0.8,
+    headerName: 'Type',
+    flex: 0.7,
     renderCell: (params) => (
       <Chip
         label={params.value || '—'}
         color={LABEL_COLORS[params.value] ?? 'default'}
         size="small"
-        variant="outlined"
+        variant="filled"
       />
     ),
   },
   {
     field: 'area',
-    headerName: 'Address',
-    flex: 2,
+    headerName: 'Location',
+    flex: 2.5,
     renderCell: (params) => {
       const row = params.row as Address;
       return (
-        <Box sx={{ lineHeight: 1.3 }}>
-          <Typography variant="body2">{row.building}</Typography>
-          <Typography variant="caption" color="text.secondary">{row.area}</Typography>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <MapPin sx={{ fontSize: 18, color: 'primary.main', flexShrink: 0 }} />
+          <Box>
+            <Typography variant="body2" sx={{ fontWeight: 500 }}>
+              {row.building}
+            </Typography>
+            <Typography variant="caption" color="text.secondary">
+              {row.area}
+            </Typography>
+          </Box>
         </Box>
       );
     },
@@ -55,12 +62,13 @@ const columns: GridColDef[] = [
   {
     field: 'cityId',
     headerName: 'City',
-    flex: 1,
+    flex: 0.8,
     renderCell: (params) => (
       <Chip
         label={CITY_LABELS[params.value] ?? params.value}
         size="small"
-        sx={{ bgcolor: 'grey.100' }}
+        variant="outlined"
+        sx={{ fontWeight: 500 }}
       />
     ),
   },
@@ -115,45 +123,74 @@ export default function AddressesList() {
   };
 
   if (error) {
-    return <Typography color="error" sx={{ p: 3 }}>Failed to load addresses: {(error as Error).message}</Typography>;
+    return (
+      <Box sx={{ p: 3 }}>
+        <Typography color="error" sx={{ fontWeight: 500 }}>
+          Failed to load addresses: {(error as Error).message}
+        </Typography>
+      </Box>
+    );
   }
 
   return (
     <Box sx={{ p: 3 }}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+      {/* Header */}
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 3 }}>
         <Box>
-          <Typography variant="h4" sx={{ lineHeight: 1 }}>Addresses</Typography>
+          <Typography variant="h4" sx={{ fontWeight: 700, mb: 0.5 }}>
+            Addresses
+          </Typography>
           {addresses && (
-            <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+            <Typography variant="body2" color="text.secondary">
               {addresses.length} {addresses.length === 1 ? 'address' : 'addresses'}
-              {(customerFilter || cityFilter) && ' matching filters'}
+              {(customerFilter || cityFilter) && ` • ${addresses.length === 0 ? 'no matches' : 'matching filters'}`}
             </Typography>
           )}
         </Box>
-        <Button variant="contained" startIcon={<Add />} onClick={() => setDialogOpen(true)}>
+        <Button
+          variant="contained"
+          startIcon={<Add />}
+          onClick={() => setDialogOpen(true)}
+          sx={{ textTransform: 'none', fontWeight: 600 }}
+        >
           New Address
         </Button>
       </Box>
 
-      <Box
+      {/* Filter Bar */}
+      <Paper
         sx={{
-          display: 'flex', alignItems: 'center', gap: 2, mb: 2,
-          p: 1.5, borderRadius: 1, bgcolor: 'grey.50', border: '1px solid', borderColor: 'divider',
+          display: 'flex',
+          alignItems: 'center',
+          gap: 2,
+          mb: 3,
+          p: 2,
+          bgcolor: 'background.default',
+          border: '1px solid',
+          borderColor: 'divider',
         }}
       >
         <FilterAlt fontSize="small" sx={{ color: 'text.secondary', flexShrink: 0 }} />
         <TextField
-          placeholder="Customer ID"
+          placeholder="Search by customer"
           value={customerInput}
           onChange={(e) => setCustomerInput(e.target.value)}
           size="small"
-          sx={{ width: 200 }}
+          variant="outlined"
+          sx={{
+            width: 220,
+            '& .MuiOutlinedInput-root': { fontSize: '0.875rem' },
+          }}
           InputProps={{
-            startAdornment: <InputAdornment position="start"><Search fontSize="small" /></InputAdornment>,
+            startAdornment: (
+              <InputAdornment position="start">
+                <Search sx={{ fontSize: 18, color: 'text.secondary' }} />
+              </InputAdornment>
+            ),
           }}
         />
         <Divider orientation="vertical" flexItem />
-        <FormControl size="small" sx={{ width: 150 }}>
+        <FormControl size="small" sx={{ width: 140 }}>
           <InputLabel>City</InputLabel>
           <Select
             value={cityFilter}
@@ -169,15 +206,19 @@ export default function AddressesList() {
         {(customerInput || cityFilter) && (
           <Button
             size="small"
-            onClick={() => { setCustomerInput(''); setCityFilter(''); }}
-            sx={{ ml: 'auto', color: 'text.secondary' }}
+            onClick={() => {
+              setCustomerInput('');
+              setCityFilter('');
+            }}
+            sx={{ ml: 'auto', textTransform: 'none' }}
           >
-            Clear
+            Clear filters
           </Button>
         )}
-      </Box>
+      </Paper>
 
-      <Box sx={{ height: 600, width: '100%' }}>
+      {/* Data Grid */}
+      <Paper sx={{ height: 600, width: '100%', overflow: 'hidden' }}>
         <DataGrid
           rows={addresses || []}
           columns={columns}
@@ -187,15 +228,23 @@ export default function AddressesList() {
             pagination: { paginationModel: { pageSize: 10 } },
           }}
           onRowClick={(params) => navigate(`/addresses/${params.row.id}`)}
-          sx={{ cursor: 'pointer' }}
-          rowHeight={52}
+          sx={{
+            cursor: 'pointer',
+            '& .MuiDataGrid-row': {
+              '&:hover': { bgcolor: 'action.hover' },
+            },
+            '& .MuiDataGrid-cell': { borderBottomColor: 'divider' },
+          }}
+          rowHeight={56}
         />
-      </Box>
+      </Paper>
 
+      {/* New Address Dialog */}
       <Dialog open={dialogOpen} onClose={handleDialogClose} maxWidth="sm" fullWidth>
-        <DialogTitle>New Address</DialogTitle>
+        <DialogTitle sx={{ fontWeight: 600 }}>Add New Address</DialogTitle>
+        <Divider />
         <DialogContent>
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, pt: 1 }}>
+          <Stack spacing={2.5} sx={{ pt: 2 }}>
             <TextField
               label="Customer ID"
               value={form.customerId}
@@ -205,61 +254,68 @@ export default function AddressesList() {
               error={submitAttempted && !form.customerId}
               helperText={submitAttempted && !form.customerId ? 'Customer ID is required' : ''}
             />
+            <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
+              <TextField
+                label="Label"
+                value={form.label || ''}
+                onChange={(e) => setForm((f) => ({ ...f, label: e.target.value }))}
+                placeholder="e.g. Home"
+              />
+              <FormControl>
+                <InputLabel>City</InputLabel>
+                <Select
+                  value={form.cityId || ''}
+                  label="City"
+                  onChange={(e: SelectChangeEvent) => setForm((f) => ({ ...f, cityId: e.target.value }))}
+                >
+                  <MenuItem value="dubai">Dubai</MenuItem>
+                  <MenuItem value="abu_dhabi">Abu Dhabi</MenuItem>
+                  <MenuItem value="sharjah">Sharjah</MenuItem>
+                </Select>
+              </FormControl>
+            </Box>
             <TextField
-              label="Label"
-              value={form.label || ''}
-              onChange={(e) => setForm((f) => ({ ...f, label: e.target.value }))}
+              label="Building Name"
+              value={form.building || ''}
+              onChange={(e) => setForm((f) => ({ ...f, building: e.target.value }))}
               fullWidth
-              placeholder="e.g. Home, Work, Office"
+              placeholder="e.g. Marina Crown"
             />
             <TextField
               label="Area"
               value={form.area || ''}
               onChange={(e) => setForm((f) => ({ ...f, area: e.target.value }))}
               fullWidth
+              placeholder="e.g. Dubai Marina"
             />
-            <TextField
-              label="Building"
-              value={form.building || ''}
-              onChange={(e) => setForm((f) => ({ ...f, building: e.target.value }))}
-              fullWidth
-            />
-            <Box sx={{ display: 'flex', gap: 2 }}>
+            <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
               <TextField
                 label="Floor"
                 value={form.floor || ''}
                 onChange={(e) => setForm((f) => ({ ...f, floor: e.target.value }))}
-                fullWidth
+                placeholder="e.g. 18"
               />
               <TextField
                 label="Apartment"
                 value={form.apartment || ''}
                 onChange={(e) => setForm((f) => ({ ...f, apartment: e.target.value }))}
-                fullWidth
+                placeholder="e.g. 1803"
               />
             </Box>
-            <FormControl fullWidth>
-              <InputLabel>City</InputLabel>
-              <Select
-                value={form.cityId || ''}
-                label="City"
-                onChange={(e: SelectChangeEvent) => setForm((f) => ({ ...f, cityId: e.target.value }))}
-              >
-                <MenuItem value="dubai">Dubai</MenuItem>
-                <MenuItem value="abu_dhabi">Abu Dhabi</MenuItem>
-                <MenuItem value="sharjah">Sharjah</MenuItem>
-              </Select>
-            </FormControl>
-          </Box>
+          </Stack>
         </DialogContent>
-        <DialogActions>
-          <Button onClick={handleDialogClose}>Cancel</Button>
+        <Divider />
+        <DialogActions sx={{ p: 2 }}>
+          <Button onClick={handleDialogClose} sx={{ textTransform: 'none' }}>
+            Cancel
+          </Button>
           <Button
             variant="contained"
             onClick={handleCreate}
             disabled={createAddress.isPending}
+            sx={{ textTransform: 'none', fontWeight: 600 }}
           >
-            Create
+            Add Address
           </Button>
         </DialogActions>
       </Dialog>
