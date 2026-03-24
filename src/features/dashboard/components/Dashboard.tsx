@@ -42,7 +42,7 @@ export default function Dashboard() {
           <MetricCard title="Orders Today" value={5} icon={<ShoppingCart fontSize="inherit" />} color="#ed6c02" />
         </Grid>
         <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-          <MetricCard title="Addresses" value={totalAddresses} icon={<LocationOn fontSize="inherit" />} color="#9c27b0" onClick={() => navigate('/addresses')} />
+          <MetricCard title="Addresses" value={totalAddresses} icon={<LocationOn fontSize="inherit" />} color="#e53935" onClick={() => navigate('/addresses')} />
         </Grid>
       </Grid>
     </Box>
