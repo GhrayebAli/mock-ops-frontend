@@ -9,6 +9,8 @@ import { clearAuthToken } from './api/client';
 import Dashboard from './features/dashboard/components/Dashboard';
 import UsersList from './features/users/components/UsersList';
 import UserDetail from './features/users/components/UserDetail';
+import OrdersList from './features/orders/components/OrdersList';
+import OrderDetail from './features/orders/components/OrderDetail';
 import LoginPage from './auth/LoginPage';
 
 const queryClient = new QueryClient();
@@ -42,6 +44,7 @@ function NavBar() {
         <Typography variant="h6" sx={{ flexGrow: 0, mr: 3 }}>Washmen Ops</Typography>
         <Button color="inherit" component={Link} to="/">Dashboard</Button>
         <Button color="inherit" component={Link} to="/users">Users</Button>
+        <Button color="inherit" component={Link} to="/orders">Orders</Button>
         <Box sx={{ flexGrow: 1 }} />
         {user && <Typography variant="body2" sx={{ mr: 2 }}>{user.firstName} {user.lastName}</Typography>}
         <Button color="inherit" onClick={handleLogout}>Logout</Button>
@@ -59,6 +62,8 @@ function AppRoutes() {
         <Route path="/" element={<RequireAuth><Dashboard /></RequireAuth>} />
         <Route path="/users" element={<RequireAuth><UsersList /></RequireAuth>} />
         <Route path="/users/:userId" element={<RequireAuth><UserDetail /></RequireAuth>} />
+        <Route path="/orders" element={<RequireAuth><OrdersList /></RequireAuth>} />
+        <Route path="/orders/:orderId" element={<RequireAuth><OrderDetail /></RequireAuth>} />
       </Routes>
     </>
   );

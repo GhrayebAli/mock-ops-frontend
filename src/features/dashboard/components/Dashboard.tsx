@@ -1,6 +1,8 @@
 import { Box, Card, CardContent, Typography, Grid } from '@mui/material';
 import { People, ShoppingCart, LocationOn, CheckCircle } from '@mui/icons-material';
 import { useUsers } from '../../users/hooks/useUsers';
+import { useOrders } from '../../orders/hooks/useOrders';
+import { useAddresses } from '../../addresses/hooks/useAddresses';
 
 function MetricCard({ title, value, icon, color }: { title: string; value: string | number; icon: React.ReactNode; color: string }) {
   return (
@@ -20,8 +22,13 @@ function MetricCard({ title, value, icon, color }: { title: string; value: strin
 
 export default function Dashboard() {
   const { data: users } = useUsers();
-  const activeUsers = users?.filter(u => u.isActive).length || 0;
-  const totalUsers = users?.length || 0;
+  const { data: orders } = useOrders();
+  const { data: addresses } = useAddresses();
+
+  const totalUsers = users?.length ?? '—';
+  const activeUsers = users?.filter(u => u.isActive).length ?? '—';
+  const totalOrders = orders?.length ?? '—';
+  const totalAddresses = addresses?.length ?? '—';
 
   return (
     <Box sx={{ p: 3 }}>
@@ -34,10 +41,10 @@ export default function Dashboard() {
           <MetricCard title="Active Users" value={activeUsers} icon={<CheckCircle fontSize="inherit" />} color="#2e7d32" />
         </Grid>
         <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-          <MetricCard title="Orders Today" value={5} icon={<ShoppingCart fontSize="inherit" />} color="#ed6c02" />
+          <MetricCard title="Orders" value={totalOrders} icon={<ShoppingCart fontSize="inherit" />} color="#ed6c02" />
         </Grid>
         <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-          <MetricCard title="Addresses" value={4} icon={<LocationOn fontSize="inherit" />} color="#9c27b0" />
+          <MetricCard title="Addresses" value={totalAddresses} icon={<LocationOn fontSize="inherit" />} color="#9c27b0" />
         </Grid>
       </Grid>
     </Box>
