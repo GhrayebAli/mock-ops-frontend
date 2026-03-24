@@ -1,10 +1,12 @@
+import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate, Link, useLocation } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import {
-  ThemeProvider, createTheme, CssBaseline,
-  AppBar, Toolbar, Typography, Button, Box, Avatar,
+  ThemeProvider, createTheme, CssBaseline, useTheme,
+  AppBar, Toolbar, Typography, Button, Box, Avatar, IconButton,
 } from '@mui/material';
+import { DarkMode, LightMode } from '@mui/icons-material';
 import { useSelector, useDispatch } from 'react-redux';
 import { store, RootState } from './app/store';
 import { logout } from './app/authSlice';
@@ -16,39 +18,46 @@ import LoginPage from './auth/LoginPage';
 
 const queryClient = new QueryClient();
 
-const theme = createTheme({
-  palette: {
-    primary: { main: '#1565c0' },
-    background: { default: '#f4f6f9', paper: '#ffffff' },
-  },
-  typography: {
-    fontFamily: '"Inter", "Roboto", "Helvetica", sans-serif',
-    h4: { fontWeight: 700 },
-    h5: { fontWeight: 700 },
-    h6: { fontWeight: 600 },
-  },
-  shape: { borderRadius: 10 },
-  components: {
-    MuiCard: {
-      styleOverrides: {
-        root: {
-          boxShadow: '0 1px 3px rgba(0,0,0,0.07), 0 1px 2px rgba(0,0,0,0.05)',
-          border: '1px solid rgba(0,0,0,0.07)',
+const ColorModeContext = React.createContext({ toggleColorMode: () => {} });
+
+function buildTheme(mode: 'light' | 'dark') {
+  return createTheme({
+    palette: {
+      mode,
+      primary: { main: '#1565c0' },
+      ...(mode === 'light'
+        ? { background: { default: '#f4f6f9', paper: '#ffffff' } }
+        : { background: { default: '#0f1117', paper: '#1a1d27' } }),
+    },
+    typography: {
+      fontFamily: '"Inter", "Roboto", "Helvetica", sans-serif',
+      h4: { fontWeight: 700 },
+      h5: { fontWeight: 700 },
+      h6: { fontWeight: 600 },
+    },
+    shape: { borderRadius: 10 },
+    components: {
+      MuiCard: {
+        styleOverrides: {
+          root: {
+            boxShadow: mode === 'light'
+              ? '0 1px 3px rgba(0,0,0,0.07), 0 1px 2px rgba(0,0,0,0.05)'
+              : '0 1px 3px rgba(0,0,0,0.3)',
+            border: mode === 'light'
+              ? '1px solid rgba(0,0,0,0.07)'
+              : '1px solid rgba(255,255,255,0.06)',
+          },
         },
       },
-    },
-    MuiAppBar: {
-      styleOverrides: {
-        root: { boxShadow: 'none' },
+      MuiAppBar: {
+        styleOverrides: { root: { boxShadow: 'none' } },
+      },
+      MuiButton: {
+        styleOverrides: { root: { textTransform: 'none', fontWeight: 500 } },
       },
     },
-    MuiButton: {
-      styleOverrides: {
-        root: { textTransform: 'none', fontWeight: 500 },
-      },
-    },
-  },
-});
+  });
+}
 
 function RequireAuth({ children }: { children: React.ReactNode }) {
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
@@ -61,6 +70,8 @@ function NavBar() {
   const user = useSelector((state: RootState) => state.auth.user);
   const dispatch = useDispatch();
   const location = useLocation();
+  const theme = useTheme();
+  const { toggleColorMode } = React.useContext(ColorModeContext);
 
   if (!isAuthenticated) return null;
 
@@ -70,6 +81,7 @@ function NavBar() {
   };
 
   const initials = user ? `${user.firstName[0]}${user.lastName[0]}` : '';
+  const isDark = theme.palette.mode === 'dark';
 
   const navLinks = [
     { label: 'Dashboard', to: '/' },
@@ -79,7 +91,7 @@ function NavBar() {
   return (
     <AppBar
       position="sticky"
-      sx={{ bgcolor: 'white', color: 'text.primary', borderBottom: '1px solid', borderColor: 'divider' }}
+      sx={{ bgcolor: 'background.paper', color: 'text.primary', borderBottom: '1px solid', borderColor: 'divider' }}
     >
       <Toolbar sx={{ gap: 0.5 }}>
         <Typography
@@ -111,6 +123,10 @@ function NavBar() {
         })}
 
         <Box sx={{ flexGrow: 1 }} />
+
+        <IconButton onClick={toggleColorMode} size="small" sx={{ mr: 1 }}>
+          {isDark ? <LightMode fontSize="small" /> : <DarkMode fontSize="small" />}
+        </IconButton>
 
         {user && (
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mr: 1 }}>
@@ -146,16 +162,34 @@ function AppRoutes() {
 }
 
 export default function App() {
+  const [mode, setMode] = React.useState<'light' | 'dark'>(
+    () => (localStorage.getItem('color-mode') as 'light' | 'dark') || 'light'
+  );
+
+  const colorMode = React.useMemo(() => ({
+    toggleColorMode: () => {
+      setMode(prev => {
+        const next = prev === 'light' ? 'dark' : 'light';
+        localStorage.setItem('color-mode', next);
+        return next;
+      });
+    },
+  }), []);
+
+  const theme = React.useMemo(() => buildTheme(mode), [mode]);
+
   return (
-    <Provider store={store}>
-      <QueryClientProvider client={queryClient}>
-        <ThemeProvider theme={theme}>
-          <CssBaseline />
-          <BrowserRouter>
-            <AppRoutes />
-          </BrowserRouter>
-        </ThemeProvider>
-      </QueryClientProvider>
-    </Provider>
+    <ColorModeContext.Provider value={colorMode}>
+      <Provider store={store}>
+        <QueryClientProvider client={queryClient}>
+          <ThemeProvider theme={theme}>
+            <CssBaseline />
+            <BrowserRouter>
+              <AppRoutes />
+            </BrowserRouter>
+          </ThemeProvider>
+        </QueryClientProvider>
+      </Provider>
+    </ColorModeContext.Provider>
   );
 }
