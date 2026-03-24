@@ -121,7 +121,7 @@ export default function Dashboard() {
             to="/users"
           />
         </Grid>
-        <Grid size={{ xs: 12, sm: 6, md: true }}>
+        <Grid size={{ xs: 6, sm: 4, md: 2.4 }}>
           <MetricCard
             title="Active Users"
             value={activeUsers}
@@ -130,7 +130,7 @@ export default function Dashboard() {
             subtitle={`${activePercent}% of total`}
           />
         </Grid>
-        <Grid size={{ xs: 12, sm: 6, md: true }}>
+        <Grid size={{ xs: 6, sm: 4, md: 2.4 }}>
           <MetricCard
             title="Inactive Users"
             value={inactiveUsers}
@@ -139,7 +139,7 @@ export default function Dashboard() {
             subtitle={`${totalUsers > 0 ? 100 - activePercent : 0}% of total`}
           />
         </Grid>
-        <Grid size={{ xs: 12, sm: 6, md: true }}>
+        <Grid size={{ xs: 6, sm: 4, md: 2.4 }}>
           <MetricCard
             title="Orders Today"
             value={5}
@@ -148,7 +148,7 @@ export default function Dashboard() {
             subtitle="Since midnight"
           />
         </Grid>
-        <Grid size={{ xs: 12, sm: 6, md: true }}>
+        <Grid size={{ xs: 6, sm: 4, md: 2.4 }}>
           <MetricCard
             title="Addresses"
             value={4}
