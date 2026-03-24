@@ -104,9 +104,6 @@ export default function Dashboard() {
     <Box sx={{ p: 3, maxWidth: 1400, mx: 'auto' }}>
       <Box sx={{ mb: 4 }}>
         <Typography variant="h4">Dashboard</Typography>
-        <Typography variant="body1" color="text.secondary" sx={{ mt: 0.5 }}>
-          Overview of your operations
-        </Typography>
       </Box>
 
       {/* Metric cards */}
