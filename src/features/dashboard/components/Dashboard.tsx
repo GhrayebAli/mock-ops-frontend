@@ -4,7 +4,7 @@ import {
   Inventory2,
   Home,
   Verified,
-  HourglassEmpty,
+  Schedule,
   Autorenew,
   Done,
   Block,
@@ -86,7 +86,7 @@ export default function Dashboard() {
       <Typography variant="h6" sx={{ mb: 2 }} color="text.secondary">Orders by Status</Typography>
       <Grid container spacing={3}>
         <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-          <MetricCard title="Pending" value={pending} icon={<HourglassEmpty fontSize="inherit" />} color="#ed6c02" />
+          <MetricCard title="Pending" value={pending} icon={<Schedule fontSize="inherit" />} color="#ed6c02" />
         </Grid>
         <Grid size={{ xs: 12, sm: 6, md: 3 }}>
           <MetricCard title="In Progress" value={inProgress} icon={<Autorenew fontSize="inherit" />} color="#1976d2" />
