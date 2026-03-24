@@ -7,7 +7,7 @@ import {
   HourglassEmpty,
   Sync,
   LocalShipping,
-  Cancel,
+  Block,
 } from '@mui/icons-material';
 import { useUsers } from '../../users/hooks/useUsers';
 import { useOrders } from '../../orders/hooks/useOrders';
@@ -95,7 +95,7 @@ export default function Dashboard() {
           <MetricCard title="Delivered" value={delivered} icon={<LocalShipping fontSize="inherit" />} color="#2e7d32" />
         </Grid>
         <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-          <MetricCard title="Cancelled" value={cancelled} icon={<Cancel fontSize="inherit" />} color="#d32f2f" />
+          <MetricCard title="Cancelled" value={cancelled} icon={<Block fontSize="inherit" />} color="#d32f2f" />
         </Grid>
       </Grid>
     </Box>
