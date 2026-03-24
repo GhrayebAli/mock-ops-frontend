@@ -3,7 +3,7 @@ import {
   People,
   Inventory2,
   Home,
-  PersonCheck,
+  HowToReg,
   Schedule,
   Autorenew,
   CheckCircle,
@@ -71,7 +71,7 @@ export default function Dashboard() {
           <MetricCard title="Total Users" value={totalUsers} icon={<People fontSize="inherit" />} color="#1976d2" />
         </Grid>
         <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-          <MetricCard title="Active Users" value={activeUsers} icon={<PersonCheck fontSize="inherit" />} color="#2e7d32" />
+          <MetricCard title="Active Users" value={activeUsers} icon={<HowToReg fontSize="inherit" />} color="#2e7d32" />
         </Grid>
         <Grid size={{ xs: 12, sm: 6, md: 3 }}>
           <MetricCard title="Total Orders" value={totalOrders} icon={<Inventory2 fontSize="inherit" />} color="#ed6c02" />
