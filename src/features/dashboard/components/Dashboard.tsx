@@ -2,7 +2,7 @@ import {
   Box, Card, CardContent, Typography, Grid,
   Chip, Avatar, LinearProgress, Divider,
 } from '@mui/material';
-import { People, LocalLaundryService, LocationOn, HowToReg, PersonOff } from '@mui/icons-material';
+import { People, LocalLaundryService, LocationOn, HowToReg, PersonRemove } from '@mui/icons-material';
 import { Link } from 'react-router-dom';
 import { useUsers } from '../../users/hooks/useUsers';
 
@@ -134,7 +134,7 @@ export default function Dashboard() {
           <MetricCard
             title="Inactive Users"
             value={inactiveUsers}
-            icon={<PersonOff fontSize="inherit" />}
+            icon={<PersonRemove fontSize="inherit" />}
             color="#d32f2f"
             subtitle={`${totalUsers > 0 ? 100 - activePercent : 0}% of total`}
           />
