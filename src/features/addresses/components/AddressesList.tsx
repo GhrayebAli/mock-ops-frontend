@@ -3,7 +3,7 @@ import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import {
   Box, Typography, TextField, Button, Dialog, DialogTitle,
   DialogContent, DialogActions, Chip, MenuItem, Select,
-  FormControl, InputLabel, SelectChangeEvent, InputAdornment, Divider,
+  FormControl, InputLabel, SelectChangeEvent, Divider,
   Paper, Stack, Card, CardContent,
 } from '@mui/material';
 import { Add, Search, LocationOn, LocationCity, Public, Apartment } from '@mui/icons-material';
@@ -195,41 +195,72 @@ export default function AddressesList() {
       {/* Table Card */}
       <Paper elevation={0} sx={{ borderRadius: 2, overflow: 'hidden' }}>
         {/* Table Toolbar */}
-        <Box sx={{ px: 2.5, py: 2, display: 'flex', alignItems: 'center', gap: 2, borderBottom: '1px solid', borderColor: 'divider' }}>
-          <TextField
-            placeholder="Search by customer"
-            value={customerInput}
-            onChange={(e) => setCustomerInput(e.target.value)}
-            size="small"
-            sx={{ width: 220 }}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <Search sx={{ fontSize: 18, color: 'text.secondary' }} />
-                </InputAdornment>
-              ),
-            }}
-          />
-          <FormControl size="small" sx={{ width: 140 }}>
-            <InputLabel>City</InputLabel>
+        <Box sx={{ px: 2.5, py: 1.75, display: 'flex', alignItems: 'center', gap: 1.5, borderBottom: '1px solid', borderColor: 'divider', bgcolor: '#fafafa' }}>
+          <Box sx={{
+            display: 'flex', alignItems: 'center', gap: 1,
+            bgcolor: 'white', border: '1px solid', borderColor: 'divider',
+            borderRadius: '8px', px: 1.5, height: 38, width: 240,
+            '&:focus-within': { borderColor: 'primary.main', boxShadow: '0 0 0 3px rgba(25,118,210,0.1)' },
+            transition: 'border-color 0.15s, box-shadow 0.15s',
+          }}>
+            <Search sx={{ fontSize: 17, color: 'text.disabled', flexShrink: 0 }} />
+            <input
+              placeholder="Search by customer…"
+              value={customerInput}
+              onChange={(e) => setCustomerInput(e.target.value)}
+              style={{
+                border: 'none', outline: 'none', background: 'transparent',
+                fontSize: 13.5, width: '100%', color: 'inherit', fontFamily: 'inherit',
+              }}
+            />
+            {customerInput && (
+              <Box
+                component="span"
+                onClick={() => setCustomerInput('')}
+                sx={{ fontSize: 16, color: 'text.disabled', cursor: 'pointer', lineHeight: 1, '&:hover': { color: 'text.primary' } }}
+              >×</Box>
+            )}
+          </Box>
+
+          <Box sx={{
+            display: 'flex', alignItems: 'center', gap: 0.75,
+            bgcolor: 'white', border: '1px solid', borderColor: cityFilter ? 'primary.main' : 'divider',
+            borderRadius: '8px', px: 1.25, height: 38, minWidth: 130,
+            position: 'relative', cursor: 'pointer',
+            boxShadow: cityFilter ? '0 0 0 3px rgba(25,118,210,0.1)' : 'none',
+            transition: 'border-color 0.15s, box-shadow 0.15s',
+          }}>
             <Select
               value={cityFilter}
-              label="City"
               onChange={(e: SelectChangeEvent) => setCityFilter(e.target.value)}
+              displayEmpty
+              variant="standard"
+              disableUnderline
+              sx={{
+                fontSize: 13.5, width: '100%',
+                '& .MuiSelect-select': { p: 0, pr: '24px !important', color: cityFilter ? 'primary.main' : 'text.secondary', fontWeight: cityFilter ? 600 : 400 },
+                '& .MuiSelect-icon': { right: 0, color: cityFilter ? 'primary.main' : 'text.disabled' },
+              }}
             >
-              <MenuItem value="">All cities</MenuItem>
-              <MenuItem value="dubai">Dubai</MenuItem>
-              <MenuItem value="abu_dhabi">Abu Dhabi</MenuItem>
-              <MenuItem value="sharjah">Sharjah</MenuItem>
+              <MenuItem value="" sx={{ fontSize: 13.5 }}>All cities</MenuItem>
+              <MenuItem value="dubai" sx={{ fontSize: 13.5 }}>Dubai</MenuItem>
+              <MenuItem value="abu_dhabi" sx={{ fontSize: 13.5 }}>Abu Dhabi</MenuItem>
+              <MenuItem value="sharjah" sx={{ fontSize: 13.5 }}>Sharjah</MenuItem>
             </Select>
-          </FormControl>
+          </Box>
+
           {(customerInput || cityFilter) && (
-            <Button size="small" onClick={() => { setCustomerInput(''); setCityFilter(''); }} sx={{ textTransform: 'none' }}>
+            <Box
+              component="span"
+              onClick={() => { setCustomerInput(''); setCityFilter(''); }}
+              sx={{ fontSize: 13, color: 'text.secondary', cursor: 'pointer', px: 1, '&:hover': { color: 'text.primary' } }}
+            >
               Clear
-            </Button>
+            </Box>
           )}
+
           {addresses && (
-            <Typography variant="body2" color="text.secondary" sx={{ ml: 'auto' }}>
+            <Typography variant="body2" color="text.disabled" sx={{ ml: 'auto', fontSize: 12.5 }}>
               {addresses.length} {addresses.length === 1 ? 'result' : 'results'}
             </Typography>
           )}
