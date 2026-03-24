@@ -50,6 +50,7 @@ export default function UserDetail() {
           <TextField label="First Name" value={form.firstName ?? ''} onChange={handleChange('firstName')} fullWidth />
           <TextField label="Last Name" value={form.lastName ?? ''} onChange={handleChange('lastName')} fullWidth />
           <TextField label="Role" value={form.userRole ?? ''} onChange={handleChange('userRole')} fullWidth />
+          <TextField label="Phone Number" value={form.phoneNumber ?? ''} onChange={handleChange('phoneNumber')} fullWidth />
           <FormControlLabel
             control={
               <Switch

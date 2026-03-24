@@ -9,4 +9,5 @@ export interface User {
   agentId?: string;
   rfidTag?: string;
   employeeId?: string;
+  phoneNumber?: string;
 }
