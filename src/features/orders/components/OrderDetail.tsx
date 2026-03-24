@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import { Box, Typography, Paper, Chip, CircularProgress, Button } from '@mui/material';
-import { ArrowBack } from '@mui/icons-material';
+import { Box, Typography, Paper, Chip, CircularProgress, Button, Stepper, Step, StepLabel } from '@mui/material';
+import { ArrowBack, Cancel } from '@mui/icons-material';
 import { useOrderDetails } from '../hooks/useOrders';
 
 const STATUS_COLORS: Record<string, 'warning' | 'info' | 'success' | 'error' | 'default'> = {
@@ -9,6 +9,31 @@ const STATUS_COLORS: Record<string, 'warning' | 'info' | 'success' | 'error' | '
   delivered: 'success',
   cancelled: 'error',
 };
+
+const FLOW_STEPS = ['pending', 'in_progress', 'delivered'];
+
+function OrderStatusStepper({ status }: { status: string }) {
+  if (status === 'cancelled') {
+    return (
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, color: 'error.main' }}>
+        <Cancel fontSize="small" />
+        <Typography variant="body2" color="error">Order cancelled</Typography>
+      </Box>
+    );
+  }
+
+  const activeStep = FLOW_STEPS.indexOf(status);
+
+  return (
+    <Stepper activeStep={activeStep} sx={{ pt: 1, pb: 1 }}>
+      {FLOW_STEPS.map((step) => (
+        <Step key={step}>
+          <StepLabel>{step.replace('_', ' ')}</StepLabel>
+        </Step>
+      ))}
+    </Stepper>
+  );
+}
 
 function Field({ label, value }: { label: string; value?: string | number | null }) {
   return (
@@ -33,18 +58,20 @@ export default function OrderDetail() {
       <Button startIcon={<ArrowBack />} onClick={() => navigate('/orders')} sx={{ mb: 2 }}>
         Back to Orders
       </Button>
-      <Typography variant="h4" sx={{ mb: 3 }}>Order Details</Typography>
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
+        <Typography variant="h4">Order Details</Typography>
+        <Chip
+          label={order.status}
+          color={STATUS_COLORS[order.status] ?? 'default'}
+          size="small"
+        />
+      </Box>
+      <Paper sx={{ p: 3, maxWidth: 600, mb: 3 }}>
+        <OrderStatusStepper status={order.status} />
+      </Paper>
       <Paper sx={{ p: 3, maxWidth: 600 }}>
         <Field label="Order ID" value={order.id} />
         <Field label="Customer" value={order.customerAlphaId} />
-        <Box sx={{ display: 'flex', gap: 2, py: 1, borderBottom: '1px solid', borderColor: 'divider' }}>
-          <Typography sx={{ width: 140, flexShrink: 0, color: 'text.secondary' }}>Status</Typography>
-          <Chip
-            label={order.status}
-            color={STATUS_COLORS[order.status] ?? 'default'}
-            size="small"
-          />
-        </Box>
         <Field label="Type" value={order.orderType} />
         <Field label="City" value={order.cityId} />
         <Field label="Total Amount" value={order.totalAmount != null ? `${order.totalAmount} ${order.currency ?? ''}`.trim() : undefined} />
