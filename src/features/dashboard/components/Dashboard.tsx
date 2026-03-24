@@ -6,7 +6,7 @@ import {
   Verified,
   Schedule,
   Autorenew,
-  Done,
+  CheckCircle,
   Block,
 } from '@mui/icons-material';
 import { useUsers } from '../../users/hooks/useUsers';
@@ -92,7 +92,7 @@ export default function Dashboard() {
           <MetricCard title="In Progress" value={inProgress} icon={<Autorenew fontSize="inherit" />} color="#1976d2" />
         </Grid>
         <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-          <MetricCard title="Delivered" value={delivered} icon={<Done fontSize="inherit" />} color="#2e7d32" />
+          <MetricCard title="Delivered" value={delivered} icon={<CheckCircle fontSize="inherit" />} color="#2e7d32" />
         </Grid>
         <Grid size={{ xs: 12, sm: 6, md: 3 }}>
           <MetricCard title="Cancelled" value={cancelled} icon={<Block fontSize="inherit" />} color="#d32f2f" />
