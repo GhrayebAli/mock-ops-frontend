@@ -1,4 +1,4 @@
-import { Box, Typography, TextField, Chip } from '@mui/material';
+import { Box, Typography, TextField, Chip, InputAdornment } from '@mui/material';
 import { Search } from '@mui/icons-material';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { useNavigate } from 'react-router-dom';
@@ -73,18 +73,38 @@ export default function Dashboard() {
   });
 
   return (
-    <Box sx={{ p: 3 }}>
+    <Box sx={{ p: 3, bgcolor: 'background.default', minHeight: '100vh' }}>
       <Typography variant="h4" sx={{ mb: 3 }}>Customers</Typography>
 
-      <Box>
-        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
+      <Box sx={{
+        bgcolor: 'background.paper',
+        border: '1px solid',
+        borderColor: 'hsl(245, 20%, 88%)',
+        borderRadius: 3,
+        overflow: 'hidden',
+      }}>
+        <Box sx={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          px: 3,
+          py: 2,
+          borderBottom: '1px solid',
+          borderColor: 'hsl(245, 20%, 88%)',
+        }}>
           <Typography variant="h6">All Customers</Typography>
           <TextField
             size="small"
             placeholder="Search by name, email, role..."
             value={search}
             onChange={e => setSearch(e.target.value)}
-            slotProps={{ input: { startAdornment: <Search sx={{ mr: 1, color: 'text.secondary' }} /> } }}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <Search sx={{ color: 'text.secondary', fontSize: 18 }} />
+                </InputAdornment>
+              ),
+            }}
             sx={{ width: 300 }}
           />
         </Box>
@@ -94,7 +114,24 @@ export default function Dashboard() {
           pageSizeOptions={[10, 25, 50]}
           initialState={{ pagination: { paginationModel: { pageSize: 10 } } }}
           onRowClick={({ row }) => navigate(`/users/${row.id}`)}
-          sx={{ cursor: 'pointer' }}
+          sx={{
+            border: 'none',
+            cursor: 'pointer',
+            '& .MuiDataGrid-columnHeaders': {
+              bgcolor: 'hsl(246, 100%, 98%)',
+              color: 'text.secondary',
+              fontWeight: 600,
+              fontSize: 12,
+              textTransform: 'uppercase',
+              letterSpacing: '0.05em',
+            },
+            '& .MuiDataGrid-row:hover': {
+              bgcolor: 'hsl(246, 100%, 98%)',
+            },
+            '& .MuiDataGrid-cell': {
+              borderColor: 'hsl(245, 20%, 88%)',
+            },
+          }}
           autoHeight
         />
       </Box>

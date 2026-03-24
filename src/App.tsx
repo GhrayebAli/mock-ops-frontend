@@ -14,7 +14,44 @@ import LoginPage from './auth/LoginPage';
 const queryClient = new QueryClient();
 const theme = createTheme({
   palette: {
-    primary: { main: '#1976d2' },
+    primary:    { main: '#261B7D', contrastText: '#ffffff' },
+    success:    { main: '#05B8AB', contrastText: '#ffffff' },
+    error:      { main: '#FE4D4D', contrastText: '#ffffff' },
+    warning:    { main: '#FE4D4D', contrastText: '#ffffff' },
+    background: { default: 'hsl(240, 20%, 97%)', paper: '#ffffff' },
+    text:       { primary: '#261B7D', secondary: 'hsl(247, 20%, 46%)' },
+  },
+  typography: {
+    fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
+    h4: { fontWeight: 700 },
+    h5: { fontWeight: 700 },
+    h6: { fontWeight: 600 },
+  },
+  shape: { borderRadius: 12 },
+  components: {
+    MuiButton: {
+      styleOverrides: {
+        root: { borderRadius: 9999, textTransform: 'none', fontWeight: 600 },
+      },
+    },
+    MuiChip: {
+      styleOverrides: {
+        root: { borderRadius: 9999, fontWeight: 600 },
+      },
+    },
+    MuiAppBar: {
+      styleOverrides: {
+        root: { backgroundColor: '#261B7D', boxShadow: 'none' },
+      },
+    },
+    MuiPaper: {
+      styleOverrides: {
+        root: { backgroundImage: 'none' },
+      },
+    },
+    MuiTextField: {
+      defaultProps: { variant: 'outlined' },
+    },
   },
 });
 
