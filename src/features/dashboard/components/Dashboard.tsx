@@ -1,8 +1,29 @@
-import { Box, Card, CardContent, Typography, Grid } from '@mui/material';
-import { People, ShoppingCart, LocationOn, CheckCircle } from '@mui/icons-material';
+import { Box, Card, CardContent, Typography, Grid, Divider } from '@mui/material';
+import {
+  People,
+  ShoppingCart,
+  LocationOn,
+  CheckCircle,
+  HourglassEmpty,
+  Sync,
+  LocalShipping,
+  Cancel,
+} from '@mui/icons-material';
 import { useUsers } from '../../users/hooks/useUsers';
+import { useOrders } from '../../orders/hooks/useOrders';
+import { useAddresses } from '../../addresses/hooks/useAddresses';
 
-function MetricCard({ title, value, icon, color }: { title: string; value: string | number; icon: React.ReactNode; color: string }) {
+function MetricCard({
+  title,
+  value,
+  icon,
+  color,
+}: {
+  title: string;
+  value: string | number;
+  icon: React.ReactNode;
+  color: string;
+}) {
   return (
     <Card sx={{ minWidth: 200 }}>
       <CardContent>
@@ -20,12 +41,23 @@ function MetricCard({ title, value, icon, color }: { title: string; value: strin
 
 export default function Dashboard() {
   const { data: users } = useUsers();
-  const activeUsers = users?.filter(u => u.isActive).length || 0;
-  const totalUsers = users?.length || 0;
+  const { data: orders } = useOrders();
+  const { data: addresses } = useAddresses();
+
+  const totalUsers = users?.length ?? 0;
+  const activeUsers = users?.filter(u => u.isActive).length ?? 0;
+  const totalOrders = orders?.length ?? 0;
+  const totalAddresses = addresses?.length ?? 0;
+
+  const pending = orders?.filter(o => o.status === 'pending').length ?? 0;
+  const inProgress = orders?.filter(o => o.status === 'in_progress').length ?? 0;
+  const delivered = orders?.filter(o => o.status === 'delivered').length ?? 0;
+  const cancelled = orders?.filter(o => o.status === 'cancelled').length ?? 0;
 
   return (
     <Box sx={{ p: 3 }}>
       <Typography variant="h4" sx={{ mb: 3 }}>Dashboard</Typography>
+
       <Grid container spacing={3}>
         <Grid size={{ xs: 12, sm: 6, md: 3 }}>
           <MetricCard title="Total Users" value={totalUsers} icon={<People fontSize="inherit" />} color="#1976d2" />
@@ -34,10 +66,28 @@ export default function Dashboard() {
           <MetricCard title="Active Users" value={activeUsers} icon={<CheckCircle fontSize="inherit" />} color="#2e7d32" />
         </Grid>
         <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-          <MetricCard title="Orders Today" value={5} icon={<ShoppingCart fontSize="inherit" />} color="#ed6c02" />
+          <MetricCard title="Total Orders" value={totalOrders} icon={<ShoppingCart fontSize="inherit" />} color="#ed6c02" />
         </Grid>
         <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-          <MetricCard title="Addresses" value={4} icon={<LocationOn fontSize="inherit" />} color="#9c27b0" />
+          <MetricCard title="Addresses" value={totalAddresses} icon={<LocationOn fontSize="inherit" />} color="#9c27b0" />
+        </Grid>
+      </Grid>
+
+      <Divider sx={{ my: 4 }} />
+
+      <Typography variant="h6" sx={{ mb: 2 }} color="text.secondary">Orders by Status</Typography>
+      <Grid container spacing={3}>
+        <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+          <MetricCard title="Pending" value={pending} icon={<HourglassEmpty fontSize="inherit" />} color="#ed6c02" />
+        </Grid>
+        <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+          <MetricCard title="In Progress" value={inProgress} icon={<Sync fontSize="inherit" />} color="#1976d2" />
+        </Grid>
+        <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+          <MetricCard title="Delivered" value={delivered} icon={<LocalShipping fontSize="inherit" />} color="#2e7d32" />
+        </Grid>
+        <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+          <MetricCard title="Cancelled" value={cancelled} icon={<Cancel fontSize="inherit" />} color="#d32f2f" />
         </Grid>
       </Grid>
     </Box>
