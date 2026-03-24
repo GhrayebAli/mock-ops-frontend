@@ -2,7 +2,7 @@ import {
   Box, Card, CardContent, Typography, Grid,
   Chip, Avatar, LinearProgress, Divider,
 } from '@mui/material';
-import { People, LocalLaundryService, LocationOn, CheckCircle } from '@mui/icons-material';
+import { People, LocalLaundryService, LocationOn, HowToReg } from '@mui/icons-material';
 import { Link } from 'react-router-dom';
 import { useUsers } from '../../users/hooks/useUsers';
 
@@ -125,7 +125,7 @@ export default function Dashboard() {
           <MetricCard
             title="Active Users"
             value={activeUsers}
-            icon={<CheckCircle fontSize="inherit" />}
+            icon={<HowToReg fontSize="inherit" />}
             color="#2e7d32"
             subtitle={`${activePercent}% of total`}
           />
