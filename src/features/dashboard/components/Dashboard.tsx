@@ -5,7 +5,7 @@ import {
   Home,
   Verified,
   HourglassEmpty,
-  Sync,
+  Autorenew,
   Done,
   Block,
 } from '@mui/icons-material';
@@ -89,7 +89,7 @@ export default function Dashboard() {
           <MetricCard title="Pending" value={pending} icon={<HourglassEmpty fontSize="inherit" />} color="#ed6c02" />
         </Grid>
         <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-          <MetricCard title="In Progress" value={inProgress} icon={<Sync fontSize="inherit" />} color="#1976d2" />
+          <MetricCard title="In Progress" value={inProgress} icon={<Autorenew fontSize="inherit" />} color="#1976d2" />
         </Grid>
         <Grid size={{ xs: 12, sm: 6, md: 3 }}>
           <MetricCard title="Delivered" value={delivered} icon={<Done fontSize="inherit" />} color="#2e7d32" />
