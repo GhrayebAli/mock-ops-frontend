@@ -2,7 +2,7 @@ import {
   Box, Card, CardContent, Typography, Grid,
   Chip, Avatar, LinearProgress, Divider,
 } from '@mui/material';
-import { People, LocalLaundryService, LocationOn, HowToReg } from '@mui/icons-material';
+import { People, LocalLaundryService, LocationOn, HowToReg, PersonOff } from '@mui/icons-material';
 import { Link } from 'react-router-dom';
 import { useUsers } from '../../users/hooks/useUsers';
 
@@ -111,7 +111,7 @@ export default function Dashboard() {
 
       {/* Metric cards */}
       <Grid container spacing={3}>
-        <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+        <Grid size={{ xs: 12, sm: 6, md: true }}>
           <MetricCard
             title="Total Users"
             value={totalUsers}
@@ -121,7 +121,7 @@ export default function Dashboard() {
             to="/users"
           />
         </Grid>
-        <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+        <Grid size={{ xs: 12, sm: 6, md: true }}>
           <MetricCard
             title="Active Users"
             value={activeUsers}
@@ -130,7 +130,16 @@ export default function Dashboard() {
             subtitle={`${activePercent}% of total`}
           />
         </Grid>
-        <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+        <Grid size={{ xs: 12, sm: 6, md: true }}>
+          <MetricCard
+            title="Inactive Users"
+            value={inactiveUsers}
+            icon={<PersonOff fontSize="inherit" />}
+            color="#d32f2f"
+            subtitle={`${totalUsers > 0 ? 100 - activePercent : 0}% of total`}
+          />
+        </Grid>
+        <Grid size={{ xs: 12, sm: 6, md: true }}>
           <MetricCard
             title="Orders Today"
             value={5}
@@ -139,7 +148,7 @@ export default function Dashboard() {
             subtitle="Since midnight"
           />
         </Grid>
-        <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+        <Grid size={{ xs: 12, sm: 6, md: true }}>
           <MetricCard
             title="Addresses"
             value={4}
