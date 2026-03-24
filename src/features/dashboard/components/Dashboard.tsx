@@ -110,8 +110,8 @@ export default function Dashboard() {
       </Box>
 
       {/* Metric cards */}
-      <Grid container spacing={2}>
-        <Grid size={{ xs: 12, sm: 6, md: true }}>
+      <Grid container spacing={2} sx={{ mb: 2 }}>
+        <Grid size={{ xs: 6, sm: 4, md: 2.4 }}>
           <MetricCard
             title="Total Users"
             value={totalUsers}
