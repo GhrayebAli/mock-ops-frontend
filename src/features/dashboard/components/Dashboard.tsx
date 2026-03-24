@@ -198,8 +198,17 @@ export default function Dashboard() {
                       </Typography>
                       <Chip
                         label={user.isActive ? 'Active' : 'Inactive'}
-                        color={user.isActive ? 'success' : 'default'}
                         size="small"
+                        sx={{
+                          fontWeight: 600,
+                          fontSize: 11,
+                          height: 22,
+                          bgcolor: user.isActive ? 'rgba(46, 125, 50, 0.12)' : 'rgba(0,0,0,0.06)',
+                          color: user.isActive ? '#2e7d32' : 'text.secondary',
+                          border: '1px solid',
+                          borderColor: user.isActive ? 'rgba(46, 125, 50, 0.3)' : 'rgba(0,0,0,0.12)',
+                          '& .MuiChip-label': { px: 1 },
+                        }}
                       />
                     </Box>
                     {i < recentUsers.length - 1 && <Divider />}
