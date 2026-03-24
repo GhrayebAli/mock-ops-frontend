@@ -2,8 +2,8 @@ import { Box, Card, CardContent, Typography, Grid, Divider } from '@mui/material
 import {
   People,
   ShoppingCart,
-  LocationOn,
-  CheckCircle,
+  Home,
+  Verified,
   HourglassEmpty,
   Sync,
   LocalShipping,
@@ -71,13 +71,13 @@ export default function Dashboard() {
           <MetricCard title="Total Users" value={totalUsers} icon={<People fontSize="inherit" />} color="#1976d2" />
         </Grid>
         <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-          <MetricCard title="Active Users" value={activeUsers} icon={<CheckCircle fontSize="inherit" />} color="#2e7d32" />
+          <MetricCard title="Active Users" value={activeUsers} icon={<Verified fontSize="inherit" />} color="#2e7d32" />
         </Grid>
         <Grid size={{ xs: 12, sm: 6, md: 3 }}>
           <MetricCard title="Total Orders" value={totalOrders} icon={<ShoppingCart fontSize="inherit" />} color="#ed6c02" />
         </Grid>
         <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-          <MetricCard title="Addresses" value={totalAddresses} icon={<LocationOn fontSize="inherit" />} color="#9c27b0" />
+          <MetricCard title="Addresses" value={totalAddresses} icon={<Home fontSize="inherit" />} color="#9c27b0" />
         </Grid>
       </Grid>
 
