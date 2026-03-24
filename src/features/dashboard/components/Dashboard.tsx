@@ -25,7 +25,15 @@ function MetricCard({
   color: string;
 }) {
   return (
-    <Card sx={{ minWidth: 200 }}>
+    <Card sx={{
+      minWidth: 200,
+      cursor: 'default',
+      transition: 'transform 0.15s ease, box-shadow 0.15s ease',
+      '&:hover': {
+        transform: 'translateY(-3px)',
+        boxShadow: 6,
+      },
+    }}>
       <CardContent>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <Box>
