@@ -52,11 +52,11 @@ const columns: GridColDef[] = [
     renderCell: (params) => {
       const row = params.row as Address;
       return (
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, height: '100%' }}>
           <LocationOn sx={{ fontSize: 18, color: 'primary.main', flexShrink: 0 }} />
-          <Box>
-            <Typography variant="body2" sx={{ fontWeight: 500 }}>{row.building}</Typography>
-            <Typography variant="caption" color="text.secondary">{row.area}</Typography>
+          <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+            <Typography variant="body2" sx={{ fontWeight: 500, lineHeight: 1.3 }}>{row.building}</Typography>
+            <Typography variant="caption" color="text.secondary" sx={{ lineHeight: 1.3 }}>{row.area}</Typography>
           </Box>
         </Box>
       );
