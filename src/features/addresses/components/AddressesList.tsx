@@ -138,7 +138,7 @@ export default function AddressesList() {
   }
 
   return (
-    <Box sx={{ p: 3, bgcolor: '#f0f2f5', minHeight: '100vh' }}>
+    <Box sx={{ p: 3, bgcolor: 'background.default', minHeight: '100vh' }}>
 
       {/* Page Header */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 3 }}>
@@ -164,7 +164,7 @@ export default function AddressesList() {
             elevation={0}
             sx={{
               borderTop: `4px solid ${color}`,
-              bgcolor: 'white',
+              bgcolor: 'background.paper',
               borderRadius: 2,
               cursor: key !== 'total' ? 'pointer' : 'default',
               transition: 'box-shadow 0.15s',
@@ -195,10 +195,10 @@ export default function AddressesList() {
       {/* Table Card */}
       <Paper elevation={0} sx={{ borderRadius: 2, overflow: 'hidden' }}>
         {/* Table Toolbar */}
-        <Box sx={{ px: 2.5, py: 1.75, display: 'flex', alignItems: 'center', gap: 1.5, borderBottom: '1px solid', borderColor: 'divider', bgcolor: '#fafafa' }}>
+        <Box sx={{ px: 2.5, py: 1.75, display: 'flex', alignItems: 'center', gap: 1.5, borderBottom: '1px solid', borderColor: 'divider', bgcolor: 'background.paper' }}>
           <Box sx={{
             display: 'flex', alignItems: 'center', gap: 1,
-            bgcolor: 'white', border: '1px solid', borderColor: 'divider',
+            bgcolor: 'action.hover', border: '1px solid', borderColor: 'divider',
             borderRadius: '8px', px: 1.5, height: 38, width: 240,
             '&:focus-within': { borderColor: 'primary.main', boxShadow: '0 0 0 3px rgba(25,118,210,0.1)' },
             transition: 'border-color 0.15s, box-shadow 0.15s',
@@ -224,7 +224,7 @@ export default function AddressesList() {
 
           <Box sx={{
             display: 'flex', alignItems: 'center', gap: 0.75,
-            bgcolor: 'white', border: '1px solid', borderColor: cityFilter ? 'primary.main' : 'divider',
+            bgcolor: 'action.hover', border: '1px solid', borderColor: cityFilter ? 'primary.main' : 'divider',
             borderRadius: '8px', px: 1.25, height: 38, minWidth: 130,
             position: 'relative', cursor: 'pointer',
             boxShadow: cityFilter ? '0 0 0 3px rgba(25,118,210,0.1)' : 'none',

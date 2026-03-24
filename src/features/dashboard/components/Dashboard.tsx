@@ -29,7 +29,7 @@ export default function Dashboard() {
   const totalAddresses = addresses?.length || 0;
 
   return (
-    <Box sx={{ p: 3 }}>
+    <Box sx={{ p: 3, minHeight: '100vh', bgcolor: 'background.default' }}>
       <Typography variant="h4" sx={{ mb: 3 }}>Dashboard</Typography>
       <Grid container spacing={3}>
         <Grid size={{ xs: 12, sm: 6, md: 3 }}>

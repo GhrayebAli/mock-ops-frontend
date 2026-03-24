@@ -1,7 +1,9 @@
+import { createContext, useContext, useMemo, useState } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, Link } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { ThemeProvider, createTheme, CssBaseline, AppBar, Toolbar, Typography, Box, Divider } from '@mui/material';
+import { ThemeProvider, createTheme, CssBaseline, AppBar, Toolbar, Typography, Box, Divider, IconButton, Tooltip } from '@mui/material';
+import { LightMode, DarkMode } from '@mui/icons-material';
 import { useLocation } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { store, RootState } from './app/store';
@@ -15,22 +17,25 @@ import AddressDetail from './features/addresses/components/AddressDetail';
 import LoginPage from './auth/LoginPage';
 
 const queryClient = new QueryClient();
-const theme = createTheme({
-  palette: {
-    primary: { main: '#1976d2' },
-  },
-});
 
+// ── Color mode context ────────────────────────────────────────────────────────
+const ColorModeContext = createContext({ toggle: () => {} });
+export const useColorMode = () => useContext(ColorModeContext);
+
+// ── Auth guard ────────────────────────────────────────────────────────────────
 function RequireAuth({ children }: { children: React.ReactNode }) {
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
   if (!isAuthenticated) return <Navigate to="/login" replace />;
   return <>{children}</>;
 }
 
+// ── NavBar ────────────────────────────────────────────────────────────────────
 function NavBar() {
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
   const user = useSelector((state: RootState) => state.auth.user);
   const dispatch = useDispatch();
+  const { toggle } = useColorMode();
+  const location = useLocation();
 
   if (!isAuthenticated) return null;
 
@@ -38,8 +43,6 @@ function NavBar() {
     clearAuthToken();
     dispatch(logout());
   };
-
-  const location = useLocation();
 
   const navLinks = [
     { label: 'Dashboard', to: '/' },
@@ -94,6 +97,14 @@ function NavBar() {
 
         <Box sx={{ flexGrow: 1 }} />
 
+        {/* Dark mode toggle */}
+        <Tooltip title="Toggle theme">
+          <IconButton onClick={toggle} size="small" sx={{ color: 'rgba(255,255,255,0.5)', mr: 1.5, '&:hover': { color: 'white', bgcolor: 'rgba(255,255,255,0.06)' } }}>
+            <LightMode sx={{ fontSize: 18, display: 'var(--icon-light)' }} />
+            <DarkMode sx={{ fontSize: 18, display: 'var(--icon-dark)' }} />
+          </IconButton>
+        </Tooltip>
+
         {/* User + logout */}
         {user && (
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
@@ -123,6 +134,7 @@ function NavBar() {
   );
 }
 
+// ── Routes ────────────────────────────────────────────────────────────────────
 function AppRoutes() {
   return (
     <>
@@ -139,16 +151,50 @@ function AppRoutes() {
   );
 }
 
+// ── App root ──────────────────────────────────────────────────────────────────
 export default function App() {
+  const stored = localStorage.getItem('colorMode') as 'light' | 'dark' | null;
+  const [mode, setMode] = useState<'light' | 'dark'>(stored ?? 'light');
+
+  const colorMode = useMemo(() => ({
+    toggle: () => setMode((prev) => {
+      const next = prev === 'light' ? 'dark' : 'light';
+      localStorage.setItem('colorMode', next);
+      return next;
+    }),
+  }), []);
+
+  const theme = useMemo(() => createTheme({
+    palette: {
+      mode,
+      primary: { main: '#3b82f6' },
+      ...(mode === 'dark' && {
+        background: { default: '#0f172a', paper: '#1e293b' },
+      }),
+    },
+    components: {
+      MuiPaper: { styleOverrides: { root: { backgroundImage: 'none' } } },
+    },
+  }), [mode]);
+
+  // CSS vars so the toggle icon swaps without extra state
+  const iconStyle = mode === 'light'
+    ? { '--icon-light': 'block', '--icon-dark': 'none' } as React.CSSProperties
+    : { '--icon-light': 'none', '--icon-dark': 'block' } as React.CSSProperties;
+
   return (
     <Provider store={store}>
       <QueryClientProvider client={queryClient}>
-        <ThemeProvider theme={theme}>
-          <CssBaseline />
-          <BrowserRouter>
-            <AppRoutes />
-          </BrowserRouter>
-        </ThemeProvider>
+        <ColorModeContext.Provider value={colorMode}>
+          <ThemeProvider theme={theme}>
+            <CssBaseline />
+            <Box style={iconStyle} sx={{ minHeight: '100vh' }}>
+              <BrowserRouter>
+                <AppRoutes />
+              </BrowserRouter>
+            </Box>
+          </ThemeProvider>
+        </ColorModeContext.Provider>
       </QueryClientProvider>
     </Provider>
   );
