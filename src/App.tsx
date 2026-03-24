@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate, Link } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, Link, useLocation } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ThemeProvider, createTheme, CssBaseline, AppBar, Toolbar, Typography, Button, Box, IconButton, Tooltip, useTheme } from '@mui/material';
@@ -78,6 +78,7 @@ function NavBar() {
   const dispatch = useDispatch();
   const { toggle } = useContext(ColorModeContext);
   const theme = useTheme();
+  const location = useLocation();
 
   if (!isAuthenticated) return null;
 
@@ -86,12 +87,44 @@ function NavBar() {
     dispatch(logout());
   };
 
+  const isActive = (path: string) => {
+    if (path === '/') return location.pathname === '/';
+    return location.pathname.startsWith(path);
+  };
+
   return (
     <AppBar position="static">
       <Toolbar>
         <Typography variant="h6" sx={{ flexGrow: 0, mr: 3 }}>Washmen Ops</Typography>
-        <Button color="inherit" component={Link} to="/">Dashboard</Button>
-        <Button color="inherit" component={Link} to="/users">Users</Button>
+        <Button
+          color="inherit"
+          component={Link}
+          to="/"
+          sx={{
+            borderBottomWidth: 3,
+            borderBottomStyle: 'solid',
+            borderBottomColor: isActive('/') ? 'inherit' : 'transparent',
+            borderRadius: 0,
+            pb: 0.5,
+          }}
+        >
+          Dashboard
+        </Button>
+        <Button
+          color="inherit"
+          component={Link}
+          to="/users"
+          sx={{
+            borderBottomWidth: 3,
+            borderBottomStyle: 'solid',
+            borderBottomColor: isActive('/users') ? 'inherit' : 'transparent',
+            borderRadius: 0,
+            pb: 0.5,
+            ml: 2,
+          }}
+        >
+          Users
+        </Button>
         <Box sx={{ flexGrow: 1 }} />
         {user && <Typography variant="body2" sx={{ mr: 2 }}>{user.firstName} {user.lastName}</Typography>}
         <Tooltip title={theme.palette.mode === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}>

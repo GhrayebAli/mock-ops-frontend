@@ -102,10 +102,6 @@ export default function Dashboard() {
 
   return (
     <Box sx={{ p: 3, maxWidth: 1400, mx: 'auto' }}>
-      <Box sx={{ mb: 4 }}>
-        <Typography variant="h4">Dashboard</Typography>
-      </Box>
-
       {/* Metric cards */}
       <Grid container spacing={2} sx={{ mb: 2 }}>
         <Grid size={{ xs: 6, sm: 4, md: 2.4 }}>
