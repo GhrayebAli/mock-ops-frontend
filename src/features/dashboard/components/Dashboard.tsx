@@ -110,7 +110,7 @@ export default function Dashboard() {
       </Box>
 
       {/* Metric cards */}
-      <Grid container spacing={3}>
+      <Grid container spacing={2}>
         <Grid size={{ xs: 12, sm: 6, md: true }}>
           <MetricCard
             title="Total Users"
@@ -160,7 +160,7 @@ export default function Dashboard() {
       </Grid>
 
       {/* Second row */}
-      <Grid container spacing={3} sx={{ mt: 0.5 }}>
+      <Grid container spacing={2} sx={{ mt: 0.5 }}>
         {/* Recent users */}
         <Grid size={{ xs: 12, md: 8 }}>
           <Card>
