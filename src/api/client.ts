@@ -22,3 +22,12 @@ export function clearAuthToken() {
   localStorage.removeItem('auth_token');
   delete INTERNAL_OPS_API.defaults.headers.common['Authorization'];
 }
+
+export const apiGet = <T>(url: string) =>
+  INTERNAL_OPS_API.get<{ data: T }>(url).then(r => r.data.data);
+
+export const apiPost = <T>(url: string, data?: unknown) =>
+  INTERNAL_OPS_API.post<{ data: T }>(url, data).then(r => r.data.data);
+
+export const apiPut = <T>(url: string, data?: unknown) =>
+  INTERNAL_OPS_API.put<{ data: T }>(url, data).then(r => r.data.data);

@@ -52,16 +52,10 @@ export default function Dashboard() {
   const totalOrders = orders?.length ?? '—';
   const totalAddresses = addresses?.length ?? '—';
 
+  const searchFields = ['firstName', 'lastName', 'email', 'phoneNumber', 'userRole', 'employeeId'] as const;
   const filteredUsers = (users ?? []).filter(u => {
     const q = search.toLowerCase();
-    return (
-      u.firstName?.toLowerCase().includes(q) ||
-      u.lastName?.toLowerCase().includes(q) ||
-      u.email?.toLowerCase().includes(q) ||
-      u.phoneNumber?.toLowerCase().includes(q) ||
-      u.userRole?.toLowerCase().includes(q) ||
-      u.employeeId?.toLowerCase().includes(q)
-    );
+    return searchFields.some(f => u[f]?.toLowerCase().includes(q));
   });
 
   return (

@@ -2,19 +2,7 @@ import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { Chip, Box, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useOrders } from '../hooks/useOrders';
-
-const STATUS_COLORS: Record<string, 'warning' | 'info' | 'success' | 'error' | 'default'> = {
-  pending: 'warning',
-  in_progress: 'info',
-  delivered: 'success',
-  cancelled: 'error',
-};
-
-const PRIORITY_COLORS: Record<string, 'error' | 'warning' | 'default'> = {
-  high: 'error',
-  normal: 'warning',
-  low: 'default',
-};
+import { STATUS_COLORS, PRIORITY_COLORS } from '../constants';
 
 const columns: GridColDef[] = [
   { field: 'id', headerName: 'ID', width: 120 },

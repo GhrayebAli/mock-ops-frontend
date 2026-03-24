@@ -2,13 +2,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Box, Typography, Paper, Chip, CircularProgress, Button, Stepper, Step, StepLabel } from '@mui/material';
 import { ArrowBack, Cancel } from '@mui/icons-material';
 import { useOrderDetails } from '../hooks/useOrders';
-
-const STATUS_COLORS: Record<string, 'warning' | 'info' | 'success' | 'error' | 'default'> = {
-  pending: 'warning',
-  in_progress: 'info',
-  delivered: 'success',
-  cancelled: 'error',
-};
+import { STATUS_COLORS } from '../constants';
 
 const FLOW_STEPS = ['pending', 'in_progress', 'delivered'];
 
