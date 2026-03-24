@@ -75,6 +75,7 @@ export default function OrderDetail() {
         <Field label="Type" value={order.orderType} />
         <Field label="City" value={order.cityId} />
         <Field label="Total Amount" value={order.totalAmount != null ? `${order.totalAmount} ${order.currency ?? ''}`.trim() : undefined} />
+        <Field label="Priority" value={order.priority} />
         <Field label="Notes" value={order.notes} />
         <Field label="Created" value={order.createdAt ? new Date(order.createdAt).toLocaleString() : undefined} />
       </Paper>

@@ -7,5 +7,6 @@ export interface Order {
   totalAmount?: number;
   currency?: string;
   notes?: string;
+  priority?: string;
   createdAt: string;
 }

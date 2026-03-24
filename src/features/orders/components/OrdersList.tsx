@@ -10,6 +10,12 @@ const STATUS_COLORS: Record<string, 'warning' | 'info' | 'success' | 'error' | '
   cancelled: 'error',
 };
 
+const PRIORITY_COLORS: Record<string, 'error' | 'warning' | 'default'> = {
+  high: 'error',
+  normal: 'warning',
+  low: 'default',
+};
+
 const columns: GridColDef[] = [
   { field: 'id', headerName: 'ID', width: 120 },
   { field: 'customerAlphaId', headerName: 'Customer', width: 140 },
@@ -27,6 +33,18 @@ const columns: GridColDef[] = [
   },
   { field: 'orderType', headerName: 'Type', width: 110 },
   { field: 'cityId', headerName: 'City', width: 120 },
+  {
+    field: 'priority',
+    headerName: 'Priority',
+    width: 110,
+    renderCell: (params) => (
+      <Chip
+        label={params.value ?? 'normal'}
+        color={PRIORITY_COLORS[params.value] ?? 'default'}
+        size="small"
+      />
+    ),
+  },
   {
     field: 'createdAt',
     headerName: 'Created',
