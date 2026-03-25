@@ -161,7 +161,7 @@ export default function Dashboard() {
               <Typography variant="h6" sx={{ mb: 2 }}>Recent Users</Typography>
               <Box sx={{ display: 'flex', flexDirection: 'column' }}>
                 {recentUsers.map((user, i) => (
-                  <Box key={user.id}>
+                  <Link key={user.id} to={`/users/${user.id}`} style={{ textDecoration: 'none', display: 'block' }}>
                     <Box
                       sx={{
                         display: 'flex',
@@ -172,6 +172,7 @@ export default function Dashboard() {
                         mx: -1,
                         borderRadius: 2,
                         transition: 'background-color 0.15s ease',
+                        cursor: 'pointer',
                         '&:hover': { bgcolor: 'action.hover' },
                       }}
                     >
@@ -214,7 +215,7 @@ export default function Dashboard() {
                       />
                     </Box>
                     {i < recentUsers.length - 1 && <Divider />}
-                  </Box>
+                  </Link>
                 ))}
               </Box>
             </CardContent>
