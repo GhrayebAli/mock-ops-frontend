@@ -2,7 +2,7 @@ import {
   Box, Card, CardContent, Typography, Grid,
   Chip, Avatar, LinearProgress, Divider, Button, TextField, MenuItem, Stack,
 } from '@mui/material';
-import { People, LocalLaundryService, LocationOn, CheckCircle, PersonRemove, Download, FilterList } from '@mui/icons-material';
+import { People, LocalLaundryService, LocationOn, CheckCircle, PersonRemove, Download, FilterList, TrendingUp, TrendingDown, ChecklistRtl, Star } from '@mui/icons-material';
 import { Link } from 'react-router-dom';
 import { useState } from 'react';
 import { useUsers } from '../../users/hooks/useUsers';
@@ -10,7 +10,7 @@ import { useUsers } from '../../users/hooks/useUsers';
 const AVATAR_COLORS = ['#1565c0', '#2e7d32', '#ed6c02', '#9c27b0', '#0288d1'];
 
 function MetricCard({
-  title, value, icon, color, subtitle, to,
+  title, value, icon, color, subtitle, to, trend, trendLabel,
 }: {
   title: string;
   value: string | number;
@@ -18,6 +18,8 @@ function MetricCard({
   color: string;
   subtitle?: string;
   to?: string;
+  trend?: 'up' | 'down';
+  trendLabel?: string;
 }) {
   const card = (
     <Card
@@ -48,11 +50,19 @@ function MetricCard({
             >
               {title}
             </Typography>
-            <Typography variant="h3" sx={{ mt: 0.5, mb: 0.5, fontWeight: 700, lineHeight: 1.2 }}>
-              {value}
-            </Typography>
+            <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 0.5, mt: 0.5 }}>
+              <Typography variant="h3" sx={{ fontWeight: 700, lineHeight: 1.2 }}>
+                {value}
+              </Typography>
+              {trend && (
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.3, color: trend === 'up' ? '#2e7d32' : '#d32f2f' }}>
+                  {trend === 'up' ? <TrendingUp fontSize="small" /> : <TrendingDown fontSize="small" />}
+                  <Typography variant="caption" sx={{ fontWeight: 600 }}>{trendLabel}</Typography>
+                </Box>
+              )}
+            </Box>
             {subtitle && (
-              <Typography variant="body2" color="text.secondary">{subtitle}</Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>{subtitle}</Typography>
             )}
           </Box>
           <Box
@@ -94,6 +104,23 @@ export default function Dashboard() {
   const activeUsers = users?.filter(u => u.isActive).length || 0;
   const inactiveUsers = totalUsers - activeUsers;
   const activePercent = totalUsers > 0 ? Math.round((activeUsers / totalUsers) * 100) : 0;
+
+  // Calculate onboarding status (mock: 70% have completed profile)
+  const onboardingComplete = Math.ceil(totalUsers * 0.7);
+  const onboardingPercent = totalUsers > 0 ? Math.round((onboardingComplete / totalUsers) * 100) : 0;
+
+  // Get top agents by user count (mock)
+  const agentGroups = users?.reduce<Record<string, number>>((acc, u) => {
+    if (u.agentId) {
+      acc[u.agentId] = (acc[u.agentId] || 0) + 1;
+    }
+    return acc;
+  }, {}) ?? {};
+
+  const topAgents = Object.entries(agentGroups)
+    .sort(([, a], [, b]) => b - a)
+    .slice(0, 3)
+    .map(([id, count]) => ({ id, count }));
 
   const roleGroups = users?.reduce<Record<string, number>>((acc, u) => {
     acc[u.userRole] = (acc[u.userRole] || 0) + 1;
@@ -151,6 +178,8 @@ export default function Dashboard() {
             color="#1565c0"
             subtitle="Registered accounts"
             to="/users"
+            trend="up"
+            trendLabel="+12%"
           />
         </Grid>
         <Grid size={{ xs: 12, sm: 6, md: 2.4 }}>
@@ -160,6 +189,8 @@ export default function Dashboard() {
             icon={<CheckCircle fontSize="inherit" />}
             color="#2e7d32"
             subtitle={`${activePercent}% of total`}
+            trend="up"
+            trendLabel="+8%"
           />
         </Grid>
         <Grid size={{ xs: 12, sm: 6, md: 2.4 }}>
@@ -212,6 +243,90 @@ export default function Dashboard() {
           </Button>
         )}
       </Stack>
+
+      {/* Third row - Onboarding & Agents */}
+      <Grid container spacing={2} sx={{ my: 2 }}>
+        <Grid size={{ xs: 12, sm: 6, md: 4 }}>
+          <Card>
+            <CardContent>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+                <ChecklistRtl sx={{ color: '#1565c0' }} />
+                <Typography variant="h6">Onboarding Status</Typography>
+              </Box>
+              <Box sx={{ mb: 2 }}>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.75 }}>
+                  <Typography variant="body2">Completed</Typography>
+                  <Typography variant="body2" sx={{ fontWeight: 600 }}>{onboardingComplete}/{totalUsers}</Typography>
+                </Box>
+                <LinearProgress
+                  variant="determinate"
+                  value={onboardingPercent}
+                  sx={{
+                    height: 8,
+                    borderRadius: 4,
+                    bgcolor: 'rgba(21, 101, 192, 0.1)',
+                    '& .MuiLinearProgress-bar': { bgcolor: '#1565c0' },
+                  }}
+                />
+              </Box>
+              <Typography variant="caption" color="text.secondary">
+                {onboardingPercent}% of users have completed profile setup
+              </Typography>
+            </CardContent>
+          </Card>
+        </Grid>
+
+        <Grid size={{ xs: 12, sm: 6, md: 8 }}>
+          <Card>
+            <CardContent>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+                <Star sx={{ color: '#ed6c02' }} />
+                <Typography variant="h6">Top Performing Agents</Typography>
+              </Box>
+              {topAgents.length > 0 ? (
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+                  {topAgents.map((agent, i) => (
+                    <Box key={agent.id} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                        <Avatar
+                          sx={{
+                            width: 32,
+                            height: 32,
+                            bgcolor: AVATAR_COLORS[i % AVATAR_COLORS.length],
+                            fontSize: 12,
+                            fontWeight: 700,
+                          }}
+                        >
+                          {i + 1}
+                        </Avatar>
+                        <Box>
+                          <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                            Agent {agent.id.slice(0, 8)}
+                          </Typography>
+                          <Typography variant="caption" color="text.secondary">
+                            {agent.count} {agent.count === 1 ? 'user' : 'users'}
+                          </Typography>
+                        </Box>
+                      </Box>
+                      <Chip
+                        label={`${agent.count}`}
+                        size="small"
+                        sx={{
+                          fontWeight: 600,
+                          bgcolor: AVATAR_COLORS[i % AVATAR_COLORS.length] + '20',
+                          color: AVATAR_COLORS[i % AVATAR_COLORS.length],
+                        }}
+                      />
+                    </Box>
+                  ))}
+                </Box>
+              ) : (
+                <Typography variant="body2" color="text.secondary">No agents assigned yet</Typography>
+              )}
+            </CardContent>
+          </Card>
+        </Grid>
+      </Grid>
 
       {/* Second row */}
       <Grid container spacing={2} sx={{ mt: 0 }}>
