@@ -92,6 +92,8 @@ export default function Dashboard() {
   const activeUsers = users?.filter(u => u.isActive).length || 0;
   const inactiveUsers = totalUsers - activeUsers;
   const activePercent = totalUsers > 0 ? Math.round((activeUsers / totalUsers) * 100) : 0;
+  const usersWithTags = users?.filter(u => u.rfidTag).length || 0;
+  const registeredEmployees = users?.filter(u => u.employeeId).length || 0;
 
   const roleGroups = users?.reduce<Record<string, number>>((acc, u) => {
     acc[u.userRole] = (acc[u.userRole] || 0) + 1;
@@ -134,20 +136,20 @@ export default function Dashboard() {
         </Grid>
         <Grid size={{ xs: 6, sm: 4, md: 2.4 }}>
           <MetricCard
-            title="Orders Today"
-            value={5}
+            title="With RFID Tags"
+            value={usersWithTags}
             icon={<LocalLaundryService fontSize="inherit" />}
             color="#FE4D4D"
-            subtitle="Since midnight"
+            subtitle="Tagged for tracking"
           />
         </Grid>
         <Grid size={{ xs: 6, sm: 4, md: 2.4 }}>
           <MetricCard
-            title="Addresses"
-            value={4}
+            title="Registered Employees"
+            value={registeredEmployees}
             icon={<LocationOn fontSize="inherit" />}
             color="#261B7D"
-            subtitle="Registered locations"
+            subtitle="Employee accounts"
           />
         </Grid>
       </Grid>
