@@ -1,6 +1,6 @@
 import {
   Box, Card, CardContent, Typography, Grid,
-  Chip, Avatar, LinearProgress, Divider, Button, TextField, MenuItem, Stack,
+  Chip, Avatar, LinearProgress, Divider, Button, TextField, MenuItem, Stack, Paper,
 } from '@mui/material';
 import { People, LocalLaundryService, LocationOn, CheckCircle, PersonRemove, Download, FilterList, TrendingUp, TrendingDown, ChecklistRtl, Star, ShoppingBag } from '@mui/icons-material';
 import { Link } from 'react-router-dom';
@@ -152,6 +152,15 @@ export default function Dashboard() {
       case 'cancelled': return { bg: 'rgba(211, 47, 47, 0.12)', text: '#d32f2f' };
       default: return { bg: 'rgba(0,0,0,0.06)', text: 'text.secondary' };
     }
+  };
+
+  // Pie chart colors for role segmentation
+  const roleColors: Record<string, string> = {
+    admin: '#1565c0',
+    agent: '#2e7d32',
+    customer: '#ed6c02',
+    manager: '#9c27b0',
+    supervisor: '#0288d1',
   };
 
   const handleExport = () => {
@@ -546,6 +555,127 @@ export default function Dashboard() {
                   </Box>
                 ))}
               </Box>
+            </CardContent>
+          </Card>
+        </Grid>
+      </Grid>
+
+      {/* Sixth row - User Segmentation */}
+      <Grid container spacing={2} sx={{ my: 2 }}>
+        <Grid size={{ xs: 12 }}>
+          <Card>
+            <CardContent>
+              <Typography variant="h6" sx={{ mb: 3 }}>User Segmentation by Role</Typography>
+              <Grid container spacing={3}>
+                {/* Pie Chart Visualization */}
+                <Grid size={{ xs: 12, md: 6 }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 250 }}>
+                    <Box sx={{ position: 'relative', width: 200, height: 200 }}>
+                      <svg width="200" height="200" viewBox="0 0 200 200" style={{ overflow: 'visible' }}>
+                        {(() => {
+                          let currentAngle = 0;
+                          const roles = Object.entries(roleGroups);
+                          const total = roles.reduce((sum, [, count]) => sum + count, 0);
+
+                          return roles.map(([role, count], i) => {
+                            const slicePercent = count / total;
+                            const sliceAngle = slicePercent * 360;
+                            const startAngle = currentAngle;
+                            const endAngle = currentAngle + sliceAngle;
+
+                            const x1 = 100 + 80 * Math.cos((startAngle * Math.PI) / 180);
+                            const y1 = 100 + 80 * Math.sin((startAngle * Math.PI) / 180);
+                            const x2 = 100 + 80 * Math.cos((endAngle * Math.PI) / 180);
+                            const y2 = 100 + 80 * Math.sin((endAngle * Math.PI) / 180);
+
+                            const largeArc = sliceAngle > 180 ? 1 : 0;
+                            const pathData = [
+                              `M 100 100`,
+                              `L ${x1} ${y1}`,
+                              `A 80 80 0 ${largeArc} 1 ${x2} ${y2}`,
+                              'Z',
+                            ].join(' ');
+
+                            const result = (
+                              <path
+                                key={role}
+                                d={pathData}
+                                fill={roleColors[role] || AVATAR_COLORS[i % AVATAR_COLORS.length]}
+                                stroke="white"
+                                strokeWidth="2"
+                              />
+                            );
+
+                            currentAngle = endAngle;
+                            return result;
+                          });
+                        })()}
+                      </svg>
+                      <Box
+                        sx={{
+                          position: 'absolute',
+                          top: '50%',
+                          left: '50%',
+                          transform: 'translate(-50%, -50%)',
+                          textAlign: 'center',
+                        }}
+                      >
+                        <Typography variant="h6" sx={{ fontWeight: 700 }}>
+                          {totalUsers}
+                        </Typography>
+                        <Typography variant="caption" color="text.secondary">
+                          Total Users
+                        </Typography>
+                      </Box>
+                    </Box>
+                  </Box>
+                </Grid>
+
+                {/* Legend and Breakdown */}
+                <Grid size={{ xs: 12, md: 6 }}>
+                  <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+                    {Object.entries(roleGroups).map(([role, count], i) => {
+                      const percent = totalUsers > 0 ? Math.round((count / totalUsers) * 100) : 0;
+                      const color = roleColors[role] || AVATAR_COLORS[i % AVATAR_COLORS.length];
+
+                      return (
+                        <Paper key={role} sx={{ p: 1.5, border: `2px solid ${color}20`, borderRadius: 2 }}>
+                          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                              <Box
+                                sx={{
+                                  width: 12,
+                                  height: 12,
+                                  borderRadius: '50%',
+                                  bgcolor: color,
+                                }}
+                              />
+                              <Typography variant="body2" sx={{ fontWeight: 600, textTransform: 'capitalize' }}>
+                                {role}
+                              </Typography>
+                            </Box>
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                              <Chip
+                                label={count}
+                                size="small"
+                                sx={{
+                                  fontWeight: 700,
+                                  height: 24,
+                                  bgcolor: `${color}20`,
+                                  color,
+                                }}
+                              />
+                              <Typography variant="caption" color="text.secondary" sx={{ minWidth: 35 }}>
+                                {percent}%
+                              </Typography>
+                            </Box>
+                          </Box>
+                        </Paper>
+                      );
+                    })}
+                  </Box>
+                </Grid>
+              </Grid>
             </CardContent>
           </Card>
         </Grid>
