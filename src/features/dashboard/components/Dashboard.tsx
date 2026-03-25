@@ -1,9 +1,10 @@
 import {
   Box, Card, CardContent, Typography, Grid,
   Chip, Avatar, LinearProgress, Divider, Button, TextField, MenuItem, Stack, Paper,
+  Dialog, DialogTitle, DialogContent, DialogActions, Snackbar, Alert,
 } from '@mui/material';
-import { People, LocalLaundryService, LocationOn, CheckCircle, PersonRemove, Download, FilterList, TrendingUp, TrendingDown, ChecklistRtl, Star, ShoppingBag } from '@mui/icons-material';
-import { Link } from 'react-router-dom';
+import { People, LocalLaundryService, LocationOn, CheckCircle, PersonRemove, Download, FilterList, TrendingUp, TrendingDown, ChecklistRtl, Star, ShoppingBag, PersonAdd, Assessment, Send } from '@mui/icons-material';
+import { Link, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { useUsers } from '../../users/hooks/useUsers';
 
@@ -97,8 +98,12 @@ function MetricCard({
 }
 
 export default function Dashboard() {
+  const navigate = useNavigate();
   const { data: users } = useUsers();
   const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'inactive'>('all');
+  const [bulkMessageOpen, setBulkMessageOpen] = useState(false);
+  const [message, setMessage] = useState('');
+  const [snackbar, setSnackbar] = useState<{ open: boolean; text: string }>({ open: false, text: '' });
 
   const totalUsers = users?.length || 0;
   const activeUsers = users?.filter(u => u.isActive).length || 0;
@@ -249,6 +254,122 @@ export default function Dashboard() {
           />
         </Grid>
       </Grid>
+
+      {/* Quick Actions */}
+      <Grid container spacing={2} sx={{ my: 2 }}>
+        {[
+          {
+            label: 'Add New User',
+            icon: <PersonAdd />,
+            color: '#1565c0',
+            onClick: () => navigate('/users'),
+          },
+          {
+            label: 'View Reports',
+            icon: <Assessment />,
+            color: '#2e7d32',
+            onClick: () => {
+              const csv = ['ID,First Name,Last Name,Email,Role,Status'];
+              (users ?? []).forEach(u => csv.push(`${u.id},${u.firstName},${u.lastName},${u.email},${u.userRole},${u.isActive ? 'Active' : 'Inactive'}`));
+              const blob = new Blob([csv.join('\n')], { type: 'text/csv' });
+              const link = document.createElement('a');
+              link.href = URL.createObjectURL(blob);
+              link.download = `report-${new Date().toISOString().split('T')[0]}.csv`;
+              link.click();
+              setSnackbar({ open: true, text: 'Report downloaded!' });
+            },
+          },
+          {
+            label: 'Send Bulk Message',
+            icon: <Send />,
+            color: '#ed6c02',
+            onClick: () => setBulkMessageOpen(true),
+          },
+        ].map(action => (
+          <Grid key={action.label} size={{ xs: 12, sm: 4 }}>
+            <Card
+              onClick={action.onClick}
+              sx={{
+                cursor: 'pointer',
+                border: `1px solid ${action.color}30`,
+                transition: 'transform 0.18s ease, box-shadow 0.18s ease',
+                '&:hover': {
+                  transform: 'translateY(-2px)',
+                  boxShadow: `0 6px 20px ${action.color}25`,
+                  borderColor: action.color,
+                },
+              }}
+            >
+              <CardContent sx={{ display: 'flex', alignItems: 'center', gap: 2, py: '16px !important' }}>
+                <Box
+                  sx={{
+                    width: 44,
+                    height: 44,
+                    borderRadius: 2,
+                    bgcolor: `${action.color}15`,
+                    color: action.color,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    flexShrink: 0,
+                  }}
+                >
+                  {action.icon}
+                </Box>
+                <Typography variant="body1" sx={{ fontWeight: 600 }}>
+                  {action.label}
+                </Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+        ))}
+      </Grid>
+
+      {/* Bulk Message Dialog */}
+      <Dialog open={bulkMessageOpen} onClose={() => setBulkMessageOpen(false)} maxWidth="sm" fullWidth>
+        <DialogTitle>Send Bulk Message</DialogTitle>
+        <DialogContent>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+            This message will be sent to all {totalUsers} users.
+          </Typography>
+          <TextField
+            autoFocus
+            multiline
+            rows={4}
+            fullWidth
+            label="Message"
+            value={message}
+            onChange={e => setMessage(e.target.value)}
+            placeholder="Type your message here..."
+          />
+        </DialogContent>
+        <DialogActions sx={{ px: 3, pb: 2 }}>
+          <Button onClick={() => setBulkMessageOpen(false)}>Cancel</Button>
+          <Button
+            variant="contained"
+            disabled={!message.trim()}
+            onClick={() => {
+              setBulkMessageOpen(false);
+              setMessage('');
+              setSnackbar({ open: true, text: `Message sent to ${totalUsers} users!` });
+            }}
+          >
+            Send
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Snackbar feedback */}
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={3000}
+        onClose={() => setSnackbar(s => ({ ...s, open: false }))}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert severity="success" onClose={() => setSnackbar(s => ({ ...s, open: false }))}>
+          {snackbar.text}
+        </Alert>
+      </Snackbar>
 
       {/* Filter controls */}
       <Stack direction="row" spacing={2} sx={{ my: 3 }}>
