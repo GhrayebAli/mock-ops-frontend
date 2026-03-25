@@ -1,6 +1,6 @@
 import {
   Box, Card, CardContent, Typography, Grid,
-  Chip, Avatar, LinearProgress, Divider, Button,
+  Chip, Avatar, LinearProgress, Divider, Button, Skeleton,
 } from '@mui/material';
 import { Group, LocalLaundryService, LocationOn, GroupAdd, PersonRemove } from '@mui/icons-material';
 import { Link } from 'react-router-dom';
@@ -85,8 +85,25 @@ function MetricCard({
   return card;
 }
 
+function MetricCardSkeleton() {
+  return (
+    <Card>
+      <CardContent sx={{ pt: 3, pb: '20px !important' }}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+          <Box sx={{ flex: 1 }}>
+            <Skeleton variant="text" width="60%" height={16} sx={{ mb: 1 }} />
+            <Skeleton variant="text" width="80%" height={40} sx={{ mb: 1 }} />
+            <Skeleton variant="text" width="70%" height={16} />
+          </Box>
+          <Skeleton variant="circular" width={48} height={48} />
+        </Box>
+      </CardContent>
+    </Card>
+  );
+}
+
 export default function Dashboard() {
-  const { data: users } = useUsers();
+  const { data: users, isLoading } = useUsers();
 
   const totalUsers = users?.length || 0;
   const activeUsers = users?.filter(u => u.isActive).length || 0;
@@ -106,52 +123,64 @@ export default function Dashboard() {
     <Box sx={{ p: 3, maxWidth: 1400, mx: 'auto' }}>
       {/* Metric cards */}
       <Grid container spacing={2} sx={{ mb: 2 }}>
-        <Grid size={{ xs: 6, sm: 4, md: 2.4 }}>
-          <MetricCard
-            title="Total Users"
-            value={totalUsers}
-            icon={<Group fontSize="inherit" />}
-            color="#261B7D"
-            subtitle="Registered accounts"
-            to="/users"
-          />
-        </Grid>
-        <Grid size={{ xs: 6, sm: 4, md: 2.4 }}>
-          <MetricCard
-            title="Active Users"
-            value={activeUsers}
-            icon={<GroupAdd fontSize="inherit" />}
-            color="#05B8AB"
-            subtitle={`${activePercent}% of total`}
-          />
-        </Grid>
-        <Grid size={{ xs: 6, sm: 4, md: 2.4 }}>
-          <MetricCard
-            title="Inactive Users"
-            value={inactiveUsers}
-            icon={<PersonRemove fontSize="inherit" />}
-            color="#FE4D4D"
-            subtitle={`${totalUsers > 0 ? 100 - activePercent : 0}% of total`}
-          />
-        </Grid>
-        <Grid size={{ xs: 6, sm: 4, md: 2.4 }}>
-          <MetricCard
-            title="With RFID Tags"
-            value={usersWithTags}
-            icon={<LocalLaundryService fontSize="inherit" />}
-            color="#FE4D4D"
-            subtitle="Tagged for tracking"
-          />
-        </Grid>
-        <Grid size={{ xs: 6, sm: 4, md: 2.4 }}>
-          <MetricCard
-            title="Registered Employees"
-            value={registeredEmployees}
-            icon={<LocationOn fontSize="inherit" />}
-            color="#261B7D"
-            subtitle="Employee accounts"
-          />
-        </Grid>
+        {isLoading ? (
+          <>
+            {[...Array(5)].map((_, i) => (
+              <Grid key={i} size={{ xs: 6, sm: 4, md: 2.4 }}>
+                <MetricCardSkeleton />
+              </Grid>
+            ))}
+          </>
+        ) : (
+          <>
+            <Grid size={{ xs: 6, sm: 4, md: 2.4 }}>
+              <MetricCard
+                title="Total Users"
+                value={totalUsers}
+                icon={<Group fontSize="inherit" />}
+                color="#261B7D"
+                subtitle="Registered accounts"
+                to="/users"
+              />
+            </Grid>
+            <Grid size={{ xs: 6, sm: 4, md: 2.4 }}>
+              <MetricCard
+                title="Active Users"
+                value={activeUsers}
+                icon={<GroupAdd fontSize="inherit" />}
+                color="#05B8AB"
+                subtitle={`${activePercent}% of total`}
+              />
+            </Grid>
+            <Grid size={{ xs: 6, sm: 4, md: 2.4 }}>
+              <MetricCard
+                title="Inactive Users"
+                value={inactiveUsers}
+                icon={<PersonRemove fontSize="inherit" />}
+                color="#FE4D4D"
+                subtitle={`${totalUsers > 0 ? 100 - activePercent : 0}% of total`}
+              />
+            </Grid>
+            <Grid size={{ xs: 6, sm: 4, md: 2.4 }}>
+              <MetricCard
+                title="With RFID Tags"
+                value={usersWithTags}
+                icon={<LocalLaundryService fontSize="inherit" />}
+                color="#FE4D4D"
+                subtitle="Tagged for tracking"
+              />
+            </Grid>
+            <Grid size={{ xs: 6, sm: 4, md: 2.4 }}>
+              <MetricCard
+                title="Registered Employees"
+                value={registeredEmployees}
+                icon={<LocationOn fontSize="inherit" />}
+                color="#261B7D"
+                subtitle="Employee accounts"
+              />
+            </Grid>
+          </>
+        )}
       </Grid>
 
       {/* Second row */}
@@ -162,63 +191,89 @@ export default function Dashboard() {
             <CardContent>
               <Typography variant="h6" sx={{ mb: 2 }}>Recent Users</Typography>
               <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                {recentUsers.map((user, i) => (
-                  <Link key={user.id} to={`/users/${user.id}`} style={{ textDecoration: 'none', display: 'block' }}>
-                    <Box
-                      sx={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: 1.5,
-                        py: 1,
-                        px: 1,
-                        mx: -1,
-                        borderRadius: 2,
-                        transition: 'background-color 0.15s ease',
-                        cursor: 'pointer',
-                        '&:hover': { bgcolor: 'action.hover' },
-                      }}
-                    >
-                      <Avatar
+                {isLoading ? (
+                  [...Array(5)].map((_, i) => (
+                    <Box key={i}>
+                      <Box
                         sx={{
-                          width: 36,
-                          height: 36,
-                          bgcolor: AVATAR_COLORS[i % AVATAR_COLORS.length] + '20',
-                          color: AVATAR_COLORS[i % AVATAR_COLORS.length],
-                          fontSize: 13,
-                          fontWeight: 700,
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 1.5,
+                          py: 1,
+                          px: 1,
+                          mx: -1,
                         }}
                       >
-                        {user.firstName[0]}{user.lastName[0]}
-                      </Avatar>
-                      <Box sx={{ flex: 1, minWidth: 0 }}>
-                        <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                          {user.firstName} {user.lastName}
-                        </Typography>
-                        <Typography variant="caption" color="text.secondary" noWrap>
-                          {user.email}
-                        </Typography>
+                        <Skeleton variant="circular" width={36} height={36} />
+                        <Box sx={{ flex: 1 }}>
+                          <Skeleton variant="text" width="40%" height={16} sx={{ mb: 0.5 }} />
+                          <Skeleton variant="text" width="60%" height={12} />
+                        </Box>
+                        <Skeleton variant="text" width="50px" height={16} />
+                        <Skeleton variant="rectangular" width="60px" height={22} sx={{ borderRadius: 1 }} />
                       </Box>
-                      <Typography variant="caption" color="text.secondary" sx={{ mr: 1, flexShrink: 0 }}>
-                        {user.userRole}
-                      </Typography>
-                      <Chip
-                        label={user.isActive ? 'Active' : 'Inactive'}
-                        size="small"
-                        sx={{
-                          fontWeight: 600,
-                          fontSize: 11,
-                          height: 22,
-                          bgcolor: user.isActive ? 'rgba(5, 184, 171, 0.12)' : 'rgba(0,0,0,0.06)',
-                          color: user.isActive ? '#05B8AB' : 'text.secondary',
-                          border: '1px solid',
-                          borderColor: user.isActive ? 'rgba(5, 184, 171, 0.3)' : 'rgba(0,0,0,0.12)',
-                          '& .MuiChip-label': { px: 1 },
-                        }}
-                      />
+                      {i < 4 && <Divider />}
                     </Box>
-                    {i < recentUsers.length - 1 && <Divider />}
-                  </Link>
-                ))}
+                  ))
+                ) : (
+                  recentUsers.map((user, i) => (
+                    <Link key={user.id} to={`/users/${user.id}`} style={{ textDecoration: 'none', display: 'block' }}>
+                      <Box
+                        sx={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 1.5,
+                          py: 1,
+                          px: 1,
+                          mx: -1,
+                          borderRadius: 2,
+                          transition: 'background-color 0.15s ease',
+                          cursor: 'pointer',
+                          '&:hover': { bgcolor: 'action.hover' },
+                        }}
+                      >
+                        <Avatar
+                          sx={{
+                            width: 36,
+                            height: 36,
+                            bgcolor: AVATAR_COLORS[i % AVATAR_COLORS.length] + '20',
+                            color: AVATAR_COLORS[i % AVATAR_COLORS.length],
+                            fontSize: 13,
+                            fontWeight: 700,
+                          }}
+                        >
+                          {user.firstName[0]}{user.lastName[0]}
+                        </Avatar>
+                        <Box sx={{ flex: 1, minWidth: 0 }}>
+                          <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                            {user.firstName} {user.lastName}
+                          </Typography>
+                          <Typography variant="caption" color="text.secondary" noWrap>
+                            {user.email}
+                          </Typography>
+                        </Box>
+                        <Typography variant="caption" color="text.secondary" sx={{ mr: 1, flexShrink: 0 }}>
+                          {user.userRole}
+                        </Typography>
+                        <Chip
+                          label={user.isActive ? 'Active' : 'Inactive'}
+                          size="small"
+                          sx={{
+                            fontWeight: 600,
+                            fontSize: 11,
+                            height: 22,
+                            bgcolor: user.isActive ? 'rgba(5, 184, 171, 0.12)' : 'rgba(0,0,0,0.06)',
+                            color: user.isActive ? '#05B8AB' : 'text.secondary',
+                            border: '1px solid',
+                            borderColor: user.isActive ? 'rgba(5, 184, 171, 0.3)' : 'rgba(0,0,0,0.12)',
+                            '& .MuiChip-label': { px: 1 },
+                          }}
+                        />
+                      </Box>
+                      {i < recentUsers.length - 1 && <Divider />}
+                    </Link>
+                  ))
+                )}
               </Box>
               <Button
                 component={Link}
@@ -244,61 +299,92 @@ export default function Dashboard() {
             <CardContent>
               <Typography variant="h6" sx={{ mb: 2.5 }}>User Status</Typography>
 
-              <Box sx={{ mb: 2.5 }}>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.75 }}>
-                  <Typography variant="body2" color="text.secondary">Active</Typography>
-                  <Typography variant="body2" sx={{ fontWeight: 600 }}>{activeUsers}</Typography>
-                </Box>
-                <LinearProgress
-                  variant="determinate"
-                  value={activePercent}
-                  color="success"
-                  sx={{ height: 8, borderRadius: 4 }}
-                />
-              </Box>
-
-              <Box sx={{ mb: 2.5 }}>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.75 }}>
-                  <Typography variant="body2" color="text.secondary">Inactive</Typography>
-                  <Typography variant="body2" sx={{ fontWeight: 600 }}>{inactiveUsers}</Typography>
-                </Box>
-                <LinearProgress
-                  variant="determinate"
-                  value={totalUsers > 0 ? (inactiveUsers / totalUsers) * 100 : 0}
-                  sx={{
-                    height: 8,
-                    borderRadius: 4,
-                    '& .MuiLinearProgress-bar': { bgcolor: '#bdbdbd' },
-                  }}
-                />
-              </Box>
-
-              <Divider sx={{ my: 2 }} />
-
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 1.5, fontWeight: 500 }}>
-                By Role
-              </Typography>
-              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-                {Object.entries(roleGroups).map(([role, count]) => (
-                  <Box
-                    key={role}
-                    sx={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      px: 1,
-                      mx: -1,
-                      py: 0.5,
-                      borderRadius: 1.5,
-                      transition: 'background-color 0.15s ease',
-                      '&:hover': { bgcolor: 'action.hover' },
-                    }}
-                  >
-                    <Typography variant="body2">{role}</Typography>
-                    <Chip label={count} size="small" sx={{ height: 20, fontSize: 11, minWidth: 28 }} />
+              {isLoading ? (
+                <>
+                  <Box sx={{ mb: 2.5 }}>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.75 }}>
+                      <Skeleton variant="text" width="40%" height={16} />
+                      <Skeleton variant="text" width="30%" height={16} />
+                    </Box>
+                    <Skeleton variant="rectangular" height={8} sx={{ borderRadius: 4 }} />
                   </Box>
-                ))}
-              </Box>
+                  <Box sx={{ mb: 2.5 }}>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.75 }}>
+                      <Skeleton variant="text" width="40%" height={16} />
+                      <Skeleton variant="text" width="30%" height={16} />
+                    </Box>
+                    <Skeleton variant="rectangular" height={8} sx={{ borderRadius: 4 }} />
+                  </Box>
+                  <Divider sx={{ my: 2 }} />
+                  <Skeleton variant="text" width="50%" height={16} sx={{ mb: 1.5 }} />
+                  <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                    {[...Array(3)].map((_, i) => (
+                      <Box key={i} sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <Skeleton variant="text" width="40%" height={16} />
+                        <Skeleton variant="text" width="30%" height={16} />
+                      </Box>
+                    ))}
+                  </Box>
+                </>
+              ) : (
+                <>
+                  <Box sx={{ mb: 2.5 }}>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.75 }}>
+                      <Typography variant="body2" color="text.secondary">Active</Typography>
+                      <Typography variant="body2" sx={{ fontWeight: 600 }}>{activeUsers}</Typography>
+                    </Box>
+                    <LinearProgress
+                      variant="determinate"
+                      value={activePercent}
+                      color="success"
+                      sx={{ height: 8, borderRadius: 4 }}
+                    />
+                  </Box>
+
+                  <Box sx={{ mb: 2.5 }}>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.75 }}>
+                      <Typography variant="body2" color="text.secondary">Inactive</Typography>
+                      <Typography variant="body2" sx={{ fontWeight: 600 }}>{inactiveUsers}</Typography>
+                    </Box>
+                    <LinearProgress
+                      variant="determinate"
+                      value={totalUsers > 0 ? (inactiveUsers / totalUsers) * 100 : 0}
+                      sx={{
+                        height: 8,
+                        borderRadius: 4,
+                        '& .MuiLinearProgress-bar': { bgcolor: '#bdbdbd' },
+                      }}
+                    />
+                  </Box>
+
+                  <Divider sx={{ my: 2 }} />
+
+                  <Typography variant="body2" color="text.secondary" sx={{ mb: 1.5, fontWeight: 500 }}>
+                    By Role
+                  </Typography>
+                  <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                    {Object.entries(roleGroups).map(([role, count]) => (
+                      <Box
+                        key={role}
+                        sx={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                          px: 1,
+                          mx: -1,
+                          py: 0.5,
+                          borderRadius: 1.5,
+                          transition: 'background-color 0.15s ease',
+                          '&:hover': { bgcolor: 'action.hover' },
+                        }}
+                      >
+                        <Typography variant="body2">{role}</Typography>
+                        <Chip label={count} size="small" sx={{ height: 20, fontSize: 11, minWidth: 28 }} />
+                      </Box>
+                    ))}
+                  </Box>
+                </>
+              )}
             </CardContent>
           </Card>
         </Grid>
