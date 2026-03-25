@@ -1,9 +1,10 @@
 import {
   Box, Card, CardContent, Typography, Grid,
-  Chip, Avatar, LinearProgress, Divider,
+  Chip, Avatar, LinearProgress, Divider, Button, TextField, MenuItem, Stack,
 } from '@mui/material';
-import { People, LocalLaundryService, LocationOn, CheckCircle, PersonRemove } from '@mui/icons-material';
+import { People, LocalLaundryService, LocationOn, CheckCircle, PersonRemove, Download, FilterList } from '@mui/icons-material';
 import { Link } from 'react-router-dom';
+import { useState } from 'react';
 import { useUsers } from '../../users/hooks/useUsers';
 
 const AVATAR_COLORS = ['#1565c0', '#2e7d32', '#ed6c02', '#9c27b0', '#0288d1'];
@@ -87,6 +88,7 @@ function MetricCard({
 
 export default function Dashboard() {
   const { data: users } = useUsers();
+  const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'inactive'>('all');
 
   const totalUsers = users?.length || 0;
   const activeUsers = users?.filter(u => u.isActive).length || 0;
@@ -98,15 +100,45 @@ export default function Dashboard() {
     return acc;
   }, {}) ?? {};
 
-  const recentUsers = users?.slice(0, 5) ?? [];
+  const filteredUsers = users?.filter(u => {
+    if (statusFilter === 'active') return u.isActive;
+    if (statusFilter === 'inactive') return !u.isActive;
+    return true;
+  }) ?? [];
+
+  const recentUsers = filteredUsers.slice(0, 5);
+
+  const handleExport = () => {
+    const headers = ['ID', 'First Name', 'Last Name', 'Email', 'Role', 'Status'];
+    const rows = filteredUsers.map(u => [
+      u.id,
+      u.firstName,
+      u.lastName,
+      u.email,
+      u.userRole,
+      u.isActive ? 'Active' : 'Inactive',
+    ]);
+
+    const csv = [headers, ...rows].map(row => row.map(cell => `"${cell}"`).join(',')).join('\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `users-${new Date().toISOString().split('T')[0]}.csv`;
+    link.click();
+  };
 
   return (
     <Box sx={{ p: 3, maxWidth: 1400, mx: 'auto' }}>
-      <Box sx={{ mb: 4 }}>
-        <Typography variant="h4">Dashboard</Typography>
-        <Typography variant="body1" color="text.secondary" sx={{ mt: 0.5 }}>
-          Overview of your operations
-        </Typography>
+      <Box sx={{ mb: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <Box>
+          <Typography variant="h4">Dashboard</Typography>
+          <Typography variant="body1" color="text.secondary" sx={{ mt: 0.5 }}>
+            Overview of your operations
+          </Typography>
+        </Box>
+        <Button startIcon={<Download />} variant="outlined" size="small" onClick={handleExport}>
+          Export
+        </Button>
       </Box>
 
       {/* Metric cards */}
@@ -159,13 +191,35 @@ export default function Dashboard() {
         </Grid>
       </Grid>
 
+      {/* Filter controls */}
+      <Stack direction="row" spacing={2} sx={{ my: 3 }}>
+        <TextField
+          select
+          size="small"
+          label="Filter by Status"
+          value={statusFilter}
+          onChange={e => setStatusFilter(e.target.value as 'all' | 'active' | 'inactive')}
+          sx={{ width: 180 }}
+          slotProps={{ input: { startAdornment: <FilterList sx={{ mr: 1, fontSize: 18 }} /> } }}
+        >
+          <MenuItem value="all">All Users</MenuItem>
+          <MenuItem value="active">Active Only</MenuItem>
+          <MenuItem value="inactive">Inactive Only</MenuItem>
+        </TextField>
+        {statusFilter !== 'all' && (
+          <Button size="small" onClick={() => setStatusFilter('all')} variant="text">
+            Clear Filter
+          </Button>
+        )}
+      </Stack>
+
       {/* Second row */}
       <Grid container spacing={2} sx={{ mt: 0 }}>
-        {/* Recent users */}
+        {/* Recent users with activity timeline */}
         <Grid size={{ xs: 12, md: 8 }}>
           <Card>
             <CardContent>
-              <Typography variant="h6" sx={{ mb: 2 }}>Recent Users</Typography>
+              <Typography variant="h6" sx={{ mb: 2 }}>Recent Users Activity</Typography>
               <Box sx={{ display: 'flex', flexDirection: 'column' }}>
                 {recentUsers.map((user, i) => (
                   <Box key={user.id}>
@@ -174,7 +228,7 @@ export default function Dashboard() {
                         display: 'flex',
                         alignItems: 'center',
                         gap: 1.5,
-                        py: 1,
+                        py: 1.5,
                         px: 1,
                         mx: -1,
                         borderRadius: 2,
@@ -202,8 +256,8 @@ export default function Dashboard() {
                           {user.email}
                         </Typography>
                       </Box>
-                      <Typography variant="caption" color="text.secondary" sx={{ mr: 1, flexShrink: 0 }}>
-                        {user.userRole}
+                      <Typography variant="caption" color="text.secondary" sx={{ fontSize: 11, mr: 1 }}>
+                        Joined today
                       </Typography>
                       <Chip
                         label={user.isActive ? 'Active' : 'Inactive'}
