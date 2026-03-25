@@ -2,7 +2,7 @@ import {
   Box, Card, CardContent, Typography, Grid,
   Chip, Avatar, LinearProgress, Divider, Button, TextField, MenuItem, Stack,
 } from '@mui/material';
-import { People, LocalLaundryService, LocationOn, CheckCircle, PersonRemove, Download, FilterList, TrendingUp, TrendingDown, ChecklistRtl, Star } from '@mui/icons-material';
+import { People, LocalLaundryService, LocationOn, CheckCircle, PersonRemove, Download, FilterList, TrendingUp, TrendingDown, ChecklistRtl, Star, ShoppingBag } from '@mui/icons-material';
 import { Link } from 'react-router-dom';
 import { useState } from 'react';
 import { useUsers } from '../../users/hooks/useUsers';
@@ -134,6 +134,25 @@ export default function Dashboard() {
   }) ?? [];
 
   const recentUsers = filteredUsers.slice(0, 5);
+
+  // Mock recent orders data
+  const recentOrders = [
+    { id: 'ORD-001', customer: 'Sarah Johnson', status: 'completed', amount: '$125.00', date: 'Today' },
+    { id: 'ORD-002', customer: 'Omar Hassan', status: 'pending', amount: '$89.50', date: 'Today' },
+    { id: 'ORD-003', customer: 'Fatima Al-Mansouri', status: 'in-progress', amount: '$156.75', date: 'Yesterday' },
+    { id: 'ORD-004', customer: 'James Wilson', status: 'completed', amount: '$210.00', date: 'Yesterday' },
+    { id: 'ORD-005', customer: 'Noor Ahmed', status: 'cancelled', amount: '$95.00', date: '2 days ago' },
+  ];
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'completed': return { bg: 'rgba(46, 125, 50, 0.12)', text: '#2e7d32' };
+      case 'pending': return { bg: 'rgba(237, 108, 2, 0.12)', text: '#ed6c02' };
+      case 'in-progress': return { bg: 'rgba(21, 101, 192, 0.12)', text: '#1565c0' };
+      case 'cancelled': return { bg: 'rgba(211, 47, 47, 0.12)', text: '#d32f2f' };
+      default: return { bg: 'rgba(0,0,0,0.06)', text: 'text.secondary' };
+    }
+  };
 
   const handleExport = () => {
     const headers = ['ID', 'First Name', 'Last Name', 'Email', 'Role', 'Status'];
@@ -328,7 +347,76 @@ export default function Dashboard() {
         </Grid>
       </Grid>
 
-      {/* Second row */}
+      {/* Fourth row - Recent Orders */}
+      <Grid container spacing={2} sx={{ my: 2 }}>
+        <Grid size={{ xs: 12 }}>
+          <Card>
+            <CardContent>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2.5 }}>
+                <ShoppingBag sx={{ color: '#ed6c02' }} />
+                <Typography variant="h6">Recent Orders</Typography>
+              </Box>
+              <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                {recentOrders.map((order, i) => {
+                  const statusColor = getStatusColor(order.status);
+                  return (
+                    <Box key={order.id}>
+                      <Box
+                        sx={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          py: 1.5,
+                          px: 1,
+                          mx: -1,
+                          borderRadius: 2,
+                          transition: 'background-color 0.15s ease',
+                          '&:hover': { bgcolor: 'action.hover' },
+                        }}
+                      >
+                        <Box sx={{ flex: 1, minWidth: 0 }}>
+                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                            <Box>
+                              <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                                {order.id}
+                              </Typography>
+                              <Typography variant="caption" color="text.secondary">
+                                {order.customer}
+                              </Typography>
+                            </Box>
+                          </Box>
+                        </Box>
+                        <Typography variant="caption" color="text.secondary" sx={{ mr: 2, minWidth: 70 }}>
+                          {order.date}
+                        </Typography>
+                        <Chip
+                          label={order.status.replace('-', ' ').toUpperCase()}
+                          size="small"
+                          sx={{
+                            fontWeight: 600,
+                            fontSize: 10,
+                            height: 20,
+                            bgcolor: statusColor.bg,
+                            color: statusColor.text,
+                            mr: 1.5,
+                            minWidth: 90,
+                          }}
+                        />
+                        <Typography variant="body2" sx={{ fontWeight: 700, minWidth: 70, textAlign: 'right' }}>
+                          {order.amount}
+                        </Typography>
+                      </Box>
+                      {i < recentOrders.length - 1 && <Divider />}
+                    </Box>
+                  );
+                })}
+              </Box>
+            </CardContent>
+          </Card>
+        </Grid>
+      </Grid>
+
+      {/* Fifth row - Users & Status */}
       <Grid container spacing={2} sx={{ mt: 0 }}>
         {/* Recent users with activity timeline */}
         <Grid size={{ xs: 12, md: 8 }}>
