@@ -1,6 +1,6 @@
 import {
   Box, Card, CardContent, Typography, Grid,
-  Chip, Avatar, LinearProgress, Divider,
+  Chip, Avatar, LinearProgress, Divider, Button,
 } from '@mui/material';
 import { Group, LocalLaundryService, LocationOn, GroupAdd, PersonRemove } from '@mui/icons-material';
 import { Link } from 'react-router-dom';
@@ -218,6 +218,20 @@ export default function Dashboard() {
                   </Link>
                 ))}
               </Box>
+              <Button
+                component={Link}
+                to="/users"
+                fullWidth
+                sx={{
+                  mt: 2,
+                  textTransform: 'none',
+                  fontWeight: 600,
+                  color: 'primary.main',
+                  '&:hover': { bgcolor: 'action.hover' },
+                }}
+              >
+                View All Users
+              </Button>
             </CardContent>
           </Card>
         </Grid>
